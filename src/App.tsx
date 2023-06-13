@@ -16,7 +16,6 @@ import { Header } from "./components";
 import { Home } from "./pages/Home";
 import { Registration } from "./pages/Registration/Registration";
 import { Login } from "./pages/Login/Login";
-import { ChatNewUser } from './pages/ChatNewUser/ChatNewUser';
 import { fetchAuthMe } from './redux/slices/auth';
 import { io } from 'socket.io-client'
 //const socket = io('http://localhost:4444')
