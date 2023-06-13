@@ -1,0 +1,29 @@
+@import 'normalize';
+
+@import 'scafolding';
+
+@import 'variables';
+
+
+h2 {
+  font-size: $main-header-height;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Roboto';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #F5F5F5 !important;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  background-color: $body-bg;
+  color: black;
+  min-height: 100vh;
+}
+
+
