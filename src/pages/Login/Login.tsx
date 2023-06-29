@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Paper from "@mui/material/Paper";
@@ -13,8 +14,9 @@ import { RootState } from "redux/store";
 import "./Login.scss";
 
 export const Login:React.FC = () => {
-  const isAuth = useSelector((state:RootState) => Boolean(state.auth.userData.data&&state.auth.data.status!=='blocked'))
-  const dispatch:ThunkDispatch<{fullName: string}, void, AnyAction> = useDispatch();
+  const { i18n, t } = useTranslation();
+  const isAuth = useSelector((state:RootState) => Boolean(state.auth.userData.data)&&state.auth.userData.data.status!=='blocked')
+  const dispatch:ThunkDispatch<{email: string,password:string}, void, AnyAction> = useDispatch();
   const { register, handleSubmit, setError, formState: { errors, isValid } } = useForm({
     defaultValues: {
       email: '',
@@ -44,21 +46,21 @@ export const Login:React.FC = () => {
   }
 
   return (
-    <Paper classes={{ root: "registration-bar"}}>
-      <Typography classes={{ root: "title" }} variant="h5">
-        Enter to account
+    <Paper classes={{ root: "login-bar"}}>
+      <Typography classes={{ root: "login-title" }} variant="h5">
+      {t("entertoaccount")}
       </Typography>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
           className="field"
-          label="E-Mail"
+          label={t("eMail")}
           type='email'
           error={Boolean(errors.email?.message)}
           helperText={errors.email?.message}
           {...register('email', { required: 'Email' })}
           fullWidth
         />
-        <TextField className="field" label="Password"
+        <TextField className="field" label={t("password")}
         error={Boolean(errors.password?.message)}
         {...register('password', { required: 'Password' })}
         helperText={errors.password?.message}
