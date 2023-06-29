@@ -1,37 +1,50 @@
 .nav-bar {
-  background-color: #fff;
   padding: 10px 0;
-  border-bottom: 1px solid #e0e0e0;
   margin-bottom: 30px;
 }
 
 .inner {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .logo {
-  color: #0d1137;
+  display: flex;
+  align-items: center;
   font-size: 2rem;
   font-weight: 700;
   line-height: 45px;
   text-transform: uppercase;
   letter-spacing: 0.15px;
-  border-radius: 5px;
   padding: 0 10px;
   text-decoration: none;
   transition: 0.5s ease-in-out;
+  margin-bottom: 5px;
 
   &:hover {
     opacity: 0.8;
   }
 }
 
+.search-bar{
+  width:40%;
+  padding: 0 10px;
+  margin-bottom: 5px;
+}
+
+.avatar-user{
+  width: 50px!important;
+  height: 50px!important;
+  padding: 0 10px;
+}
+
 .buttons {
   display: flex;
+  align-items: center;
 
   button {
-    margin-left: 10px;
+    margin-left: 20px;
   }
 
   a {
@@ -39,8 +52,9 @@
   }
 }
 
-.elementOfTypography {
-  display: flex;
-  align-items: center;
-  color: black;
+@media screen and (max-width: 780px){
+  .buttons{
+    margin-top:5px;
+  }
 }
+
