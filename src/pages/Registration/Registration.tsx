@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from "react-i18next";
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
@@ -14,6 +15,7 @@ import { Navigate } from "react-router-dom";
 import './Registration.scss';
 
 export const Registration: React.FC = () => {
+  const { i18n, t } = useTranslation();
   const isAuth = useSelector((state: RootState) => Boolean(state.auth.userData.data))
   const dispatch: ThunkDispatch<{fullName: string }, void, AnyAction> = useDispatch();
   const { register, handleSubmit, setError, formState: { errors, isValid } } = useForm({
@@ -43,19 +45,19 @@ export const Registration: React.FC = () => {
 
   return (
     <Paper classes={{ root: "registration-bar" }}>
-      <Typography classes={{ root: "title" }} variant="h5">
-        Enter in chat application
+      <Typography classes={{ root: "registration-title" }} variant="h5">
+      {t("createaccount")}
       </Typography>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField error={Boolean(errors.fullName?.message)}
           helperText={errors.fullName?.message}
-          {...register('fullName', { required: 'Write fullName' })} className="registration-field" label="Full name" fullWidth />
+          {...register('fullName', { required: t("writefullName") })} className="registration-field" label={t("fullname")} fullWidth />
         <TextField type='email' error={Boolean(errors.email?.message)}
           helperText={errors.email?.message}
-          {...register('email', { required: 'Write Email' })} className="registration-field" label="E-Mail" fullWidth />
+          {...register('email', { required: t("writeEmail") })} className="registration-field" label={t("eMail")} fullWidth />
         <TextField type='password' error={Boolean(errors.password?.message)}
           helperText={errors.password?.message}
-          {...register('password', { required: 'Write Password' })} className="registration-field" label="Password" fullWidth />
+          {...register('password', { required: t("writePassword") })} className="registration-field" label={t("password")} fullWidth />
         <Button disabled={!isValid} type="submit" size="large" variant="contained" fullWidth>
           Registration
         </Button>
