@@ -1,29 +1,41 @@
 @import 'normalize';
 
-@import 'scafolding';
-
 @import 'variables';
 
+@import "variables.scss";
 
-h2 {
-  font-size: $main-header-height;
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
 }
+
+html {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Roboto';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #F5F5F5 !important;
+  font-family: 'Georgia', sans-serif;
+  font-weight: 400;
+  background-color: #cdcdcd;
+  font-size: $main-font-size;
+  line-height: $main-line-height;
+  //color: $text-color-note;
+  transition: all 0.25s linear
 }
 
 #root {
   display: flex;
   flex-direction: column;
-  background-color: $body-bg;
-  color: black;
   min-height: 100vh;
 }
-
-
