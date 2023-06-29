@@ -1,8 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { config } from 'process';
+import { instance } from '../../constant/apiConfig';
 
-interface IInitialState {
+interface IAuthData {
   userData:{
     data: {
       _id: string,
@@ -16,19 +17,6 @@ interface IInitialState {
   }
 }
 
-
-
-const REACT_APP_API_URL = 'http://localhost:4444';
-
-const instance = axios.create({
-  baseURL: REACT_APP_API_URL
-});
-//process.env.REACT_APP_API_URL
-
-instance.interceptors.request.use((config) => {
-  config.headers.Authorization = window.localStorage.getItem('token');
-  return config;
-})
 
 
 
@@ -60,7 +48,7 @@ const initialState = {
     status: 'loading'
   }
 
-} as IInitialState;
+} as IAuthData;
 
 const authSlice = createSlice({
   name: 'auth',
@@ -107,7 +95,6 @@ const authSlice = createSlice({
       state.userData.status = 'error';
       state.userData.data = null;
     })
-
   }
 
 })
