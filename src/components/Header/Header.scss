@@ -28,8 +28,8 @@
 }
 
 .search-bar{
-  width:40%;
-  padding: 0 10px;
+  //width:40%;
+ // padding: 0 10px;
   margin-bottom: 5px;
 }
 
@@ -51,10 +51,18 @@
     text-decoration: none;
   }
 }
+.result-item-researched{
+  text-decoration: none;
+}
 
 @media screen and (max-width: 780px){
   .buttons{
     margin-top:5px;
   }
+  .btn-header{
+    font-size: 0.7rem !important;
+    width: 100px;
+  }
 }
+
 
