@@ -6,21 +6,21 @@ import { instance } from '../../constant/apiConfig';
 
 
 export const fetchUsersTable = createAsyncThunk('table/fetchUserTable', async () => {
-  const { data } = await instance.get('/table');
+  const { data } = await instance.get('/adminDashboard');
   return data;
 })
 export const fetchDeleteUser = createAsyncThunk('table/fetchDeleteUser', async (id: string) => {
-  return await instance.delete(`/table/delete/${id}`);
+  return await instance.delete(`/adminDashboard/delete/${id}`);
 }
 )
 
 export const fetchStatusStatusUser = createAsyncThunk('table/fetchPatchUser', async ({ user, status }: { user: string, status: string }) => {
-  const { data } = await instance.patch(`/table/update/${user}`, { 'status': status });
+  const { data } = await instance.patch(`/adminDashboard/update/${user}`, { 'status': status });
   return data;
 })
 
 export const fetchAccess = createAsyncThunk('table/fetchAccess', async ({ user, position }: { user: string, position: string }) => {
-  const { data } = await instance.patch(`/table/updateAccess/${user}`, { 'position': position });
+  const { data } = await instance.patch(`/adminDashboard/updateAccess/${user}`, { 'position': position });
   return data;
 })
 
