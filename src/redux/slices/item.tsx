@@ -29,7 +29,7 @@ interface IInitialState {
 }
 
 
-export const fetchUserCollectionItem = createAsyncThunk('collection/fetchUserCollectionItem', async (params: { title: string, tags: string[], collectionName: string }) => {
+export const fetchUserCollectionItem = createAsyncThunk('collection/fetchUserCollectionItem', async (params: { title: string, tags: string[], collectionName: string,idUser:string }) => {
   const { data } = await instance.post('/collection/items', params);
   return data;
 })
