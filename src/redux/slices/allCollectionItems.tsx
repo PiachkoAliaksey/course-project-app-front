@@ -15,7 +15,7 @@ export const getFiveLastItem = createAsyncThunk('collection/getFiveLastItem', as
   return data;
 })
 
-export const fetchCloudTags = createAsyncThunk('posts/fetchCloudTags', async () => {
+export const fetchCloudTags = createAsyncThunk('collection/fetchCloudTags', async () => {
   const { data } = await instance.get('/tags');
   return data;
 })
@@ -27,6 +27,26 @@ export const fetchDeleteCollectionItem = createAsyncThunk('collection/fetchDelet
 
 export const fetchEditCollectionItem = createAsyncThunk('collection/fetchEditCollectionItem', async ({ idItem, title, tags, collectionName }: { idItem: string, title: string, tags: string[], collectionName: string }) => {
   const { data } = await instance.patch(`/collection/items/update/${idItem}`, { 'title': title, 'tags': tags, 'collectionName': collectionName });
+  return data;
+})
+
+export const getAllMatchItems = createAsyncThunk('collection/getAllMatchItems', async (tag: string) => {
+  const { data } = await instance.get(`/search/items/${tag}`);
+  return data;
+})
+
+export const fetchSearchItems = createAsyncThunk('collection/fetchSearchItems', async (searchResult: string) => {
+  const { data } = await instance.get(`/search?searchText=${searchResult}`);
+  return data;
+})
+
+export const fetchSearchItemsByComments = createAsyncThunk('collection/fetchSearchItemsByComments', async (searchResult: string) => {
+  const { data } = await instance.get(`/searchByComments?searchText=${searchResult}`);
+  return data;
+})
+
+export const fetchSearchItemsByCollection = createAsyncThunk('collection/fetchSearchItemsByCollection', async (searchResult: string) => {
+  const { data } = await instance.get(`/searchByCollections?searchText=${searchResult}`);
   return data;
 })
 
@@ -43,15 +63,15 @@ interface IInitialState {
   }
 }
 const initialState = {
-items:{
-  allCollectionItems: [],
-  status: 'loading'
+  items: {
+    allCollectionItems: [],
+    status: 'loading'
 
-},
-allTags:{
-  tags: [],
+  },
+  allTags: {
+    tags: [],
     status: 'loading',
-}
+  }
 
 
 } as IInitialState;
@@ -133,8 +153,30 @@ const allCollectionItemsSlice = createSlice({
       state.allTags.tags = [];
       state.allTags.status = 'error';
     })
-
-
+    builder.addCase(getAllMatchItems.pending, (state) => {
+      state.items.allCollectionItems = [];
+      state.items.status = 'loading';
+    })
+    builder.addCase(getAllMatchItems.fulfilled, (state, action) => {
+      state.items.allCollectionItems = action.payload
+      state.items.status = 'loaded';
+    })
+    builder.addCase(getAllMatchItems.rejected, (state) => {
+      state.items.allCollectionItems = [];
+      state.items.status = 'error';
+    })
+    // builder.addCase(fetchSearchItems.pending, (state) => {
+    //   state.items.allCollectionItems = [];
+    //   state.items.status = 'loading';
+    // })
+    // builder.addCase(fetchSearchItems.fulfilled, (state, action) => {
+    //   state.items.allCollectionItems = action.payload
+    //   state.items.status = 'loaded';
+    // })
+    // builder.addCase(fetchSearchItems.rejected, (state) => {
+    //   state.items.allCollectionItems = [];
+    //   state.items.status = 'error';
+    // })
   }
 })
 
