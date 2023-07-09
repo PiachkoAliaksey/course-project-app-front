@@ -15,16 +15,16 @@ export const TableRowsLoader:React.FC<{rowsNum:number}> = ({ rowsNum }) => {
           <Skeleton animation="wave" variant="rectangular" width={20} height={20} />
         </TableCell>
         <TableCell>
-          <Skeleton animation="wave" variant="text" />
+          <Skeleton animation="wave" width='100px' variant="text" />
         </TableCell>
         <TableCell>
-          <Skeleton animation="wave" variant="text" />
+          <Skeleton animation="wave" width='100px' variant="text" />
         </TableCell>
         <TableCell>
-          <Skeleton animation="wave" variant="text" />
+          <Skeleton animation="wave" width='100px' variant="text" />
         </TableCell>
         <TableCell>
-          <Skeleton animation="wave" variant="text" />
+          <Skeleton animation="wave" width='100px' variant="text" />
         </TableCell>
       </TableRow>
     ))}
