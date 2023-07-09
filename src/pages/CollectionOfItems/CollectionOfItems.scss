@@ -1,0 +1,9 @@
+.item-of-collection{
+  text-decoration: none;
+}
+
+@media screen and (max-width: 420px){
+  .title-dashboard-add-item{
+    font-size: 1.1rem !important;
+  }
+}
