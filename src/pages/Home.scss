@@ -12,3 +12,26 @@
   flex-wrap: wrap;
 }
 
+.link-tag{
+  text-decoration: none;
+}
+
+.last-added-item{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media screen and (max-width: 420px){
+  .last-added-item{
+    font-size: 0.7rem;
+  }
+  .title-list-five-last-items{
+    font-size: 0.8rem;
+  }
+  .title-main-container-items-collections{
+    font-size: 1.1rem !important;
+  }
+}
+
+
