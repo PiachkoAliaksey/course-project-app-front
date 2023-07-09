@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
-
+import { useTranslation } from "react-i18next";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { Button, Paper, TextField } from '@mui/material';
@@ -32,10 +32,13 @@ import { fetchUserAllCollectionItem, fetchDeleteCollectionItem, fetchEditCollect
 import { TableItemLoader } from '../../components/TablesRowsLoader/TableItemsLoader';
 import { IUser } from '../../pages/AdminPanel/AdminPanel';
 
+import './CollectionOfItems.scss';
+
 
 
 export const CollectionOfItems: React.FC = () => {
-  const { id } = useParams();
+  const { i18n, t } = useTranslation();
+  const { userId,collectionId } = useParams();
   const dispatch: ThunkDispatch<Object[] | Object, void, AnyAction> = useDispatch();
   const userData: IUser = useSelector((state: RootState) => state.auth.userData.data);
   const { items, allTags } = useSelector((state: RootState) => state.items);
@@ -59,9 +62,9 @@ export const CollectionOfItems: React.FC = () => {
 
 
   const handleSendItem = async (data: { title: string, tags: string }) => {
-    if (title.length > 0 && tags.length > 0 && id) {
-      await dispatch(fetchUserCollectionItem({ 'title': title, 'tags': tags.split(' '), 'collectionName': id }));
-      await dispatch(fetchUserAllCollectionItem(id));
+    if (title.length > 0 && tags.length > 0 && collectionId&&userId) {
+      await dispatch(fetchUserCollectionItem({ 'title': title, 'tags': tags.split(' '), 'collectionName': collectionId,'idUser':userId }));
+      await dispatch(fetchUserAllCollectionItem(collectionId));
       setTitle('');
       setTags('');
     }
@@ -70,14 +73,15 @@ export const CollectionOfItems: React.FC = () => {
   const handlerDeleteItem = async (e: SyntheticEvent, index: string) => {
     e.preventDefault();
     await dispatch(fetchDeleteCollectionItem(index));
-    id && await dispatch(fetchUserAllCollectionItem(id));
-    id && await dispatch(fetchEditCountItemCollection(id));
+    collectionId && await dispatch(fetchEditCountItemCollection(collectionId));
+    collectionId && await dispatch(fetchUserAllCollectionItem(collectionId));
+
   }
 
   const handlerEditItem = async (data: { title: string, tags: string }) => {
-    if (title.length > 0 && tags.length > 0 && currentItemId && id) {
-      await dispatch(fetchEditCollectionItem({ 'idItem': currentItemId, 'title': title, 'tags': tags.split(' '), 'collectionName': id }));
-      await dispatch(fetchUserAllCollectionItem(id));
+    if (title.length > 0 && tags.length > 0 && currentItemId && collectionId) {
+      await dispatch(fetchEditCollectionItem({ 'idItem': currentItemId, 'title': title, 'tags': tags.split(' '), 'collectionName': collectionId }));
+      await dispatch(fetchUserAllCollectionItem(collectionId));
       setTitle('');
       setTags('');
       setIsEdit(false);
@@ -93,8 +97,8 @@ export const CollectionOfItems: React.FC = () => {
   }
 
   useEffect(() => {
-    id && dispatch(fetchUserAllCollectionItem(id))
-  }, [id])
+    collectionId && dispatch(fetchUserAllCollectionItem(collectionId))
+  }, [collectionId])
 
 
 
@@ -107,10 +111,10 @@ export const CollectionOfItems: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell > <Typography>Title</Typography></TableCell>
-              <TableCell > <Typography>Tags</Typography></TableCell>
-              <TableCell ><Typography>Edit</Typography></TableCell>
-              <TableCell > <Typography>Delete</Typography></TableCell>
+              <TableCell > <Typography>{t("titleItem")}</Typography></TableCell>
+              <TableCell > <Typography>{t("tags")}</Typography></TableCell>
+              <TableCell ><Typography>{t("edit")}</Typography></TableCell>
+              <TableCell > <Typography>{t("btndelete")}</Typography></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -121,8 +125,9 @@ export const CollectionOfItems: React.FC = () => {
 
                 <TableRow key={obj._id}>
                   <TableCell>
-                    <Link to={`/collection/items/item/${obj._id}`}>
-                      {obj.title}
+                    <Link className='item-of-collection' to={`/collection/items/item/${obj._id}`}>
+                      <ListItem sx={{color: 'text.primary'}}>{obj.title}</ListItem>
+
                     </Link>
                   </TableCell>
                   <TableCell><List>{obj.tags.map((val,index) => <ListItem key={uuidv4()}>{val}</ListItem>)}</List></TableCell>
@@ -146,16 +151,16 @@ export const CollectionOfItems: React.FC = () => {
         {isEdit ? (<form onSubmit={handleSubmit(handlerEditItem)} >
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              <Typography variant='h5'>Title</Typography>
+              <Typography classes={{root:'title-dashboard-add-item'}} variant='h5'>Title</Typography>
               <TextField size="small" {...register('title', { value: title })} onChange={(e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setTitle(e.currentTarget.value)} fullWidth />
             </Grid>
             <Grid item xs={6}>
-              <Typography variant='h5'>Tags</Typography>
+              <Typography classes={{root:'title-dashboard-add-item'}} variant='h5'>Tags</Typography>
               <TextField size="small" {...register('tags', { value: tags })} onChange={(e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setTags((e.currentTarget.value).trim())} fullWidth />
             </Grid>
             <Grid container>
               <Grid item xs={12}>
-                <Button type="submit" variant="contained" fullWidth>Create</Button>
+                <Button type="submit" variant="contained" fullWidth>{t("edit")}</Button>
               </Grid>
             </Grid>
           </Grid>
@@ -163,17 +168,17 @@ export const CollectionOfItems: React.FC = () => {
         </form>) : (<form onSubmit={handleSubmit(handleSendItem)} >
           <Grid container spacing={2} sx={{ marginBottom: '10px' }}>
             <Grid item xs={6}>
-              <Typography variant='h5'>Title</Typography>
+              <Typography classes={{root:'title-dashboard-add-item'}} variant='h5'>{t("titleItem")}</Typography>
               <TextField size="small" {...register('title', { value: title })} onChange={(e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setTitle(e.currentTarget.value)} fullWidth />
             </Grid>
             <Grid item xs={6}>
-              <Typography variant='h5'>Tags</Typography>
+              <Typography classes={{root:'title-dashboard-add-item'}} variant='h5'>{t("tags")}</Typography>
               <TextField size="small" {...register('tags', { value: tags })} onChange={(e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setTags((e.currentTarget.value).trim())} fullWidth />
             </Grid>
           </Grid>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Button type="submit" variant="contained" fullWidth>Create</Button>
+              <Button type="submit" variant="contained" fullWidth>{t("create")}</Button>
             </Grid>
           </Grid>
 
