@@ -36,6 +36,7 @@ function App() {
   const [listByComments, setListByComments] = useState<{ _id: string, title: string }[]>([]);
   const [listByCollection, setListByCollection] = useState<{ _id: string, title: string }[]>([]);
   const [mode, setMode] = React.useState<'light' | 'dark'>(JSON.parse(localStorage.getItem('theme')!) || 'light');
+
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
