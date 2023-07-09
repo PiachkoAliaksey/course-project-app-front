@@ -80,7 +80,7 @@ export const CommentsBlock: React.FC<ICommentsBlock> = ({ children, itemIndex, s
   return (
     <Paper>
       <List>
-        {(isLoaded ? commentsUser : [...Array(5)]).map((obj: { from: string, message: string, created: string }, index) => (
+        {(isLoaded? commentsUser : [...Array(5)]).map((obj: { from: string, message: string, created: string }, index) => (
           <React.Fragment key={index}>
             <ListItem alignItems="flex-start">
               <ListItemAvatar>
