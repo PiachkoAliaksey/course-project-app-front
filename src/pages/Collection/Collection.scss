@@ -14,3 +14,20 @@
   border-radius: 5px;
   padding: 10px;
 }
+
+.collection-user{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+
+@media screen and (max-width: 420px){
+  .title-create-collection-dashboard{
+    font-size: 1.1rem !important;
+  }
+  .collection-user{
+    font-size: 0.8rem;
+  }
+}
+
