@@ -178,6 +178,7 @@ export const AdminPanel: React.FC = () => {
             ) : (
               items.map((user: IUser, i) => (
                 <UsersTable
+                  key={uuidv4()}
                   isCheck={isCheck}
                   setIsCheck={setIsCheck}
                   index={i}
