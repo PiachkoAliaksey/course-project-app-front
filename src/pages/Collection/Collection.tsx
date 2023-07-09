@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, SyntheticEvent } from 'react';
+import { useParams } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { AnyAction } from "redux";
 import { RootState } from "redux/store";
@@ -27,12 +28,14 @@ import { fetchUserCollection } from "../../redux/slices/collection";
 import { fetchUserAllCollections, fetchDeleteCollection, fetchEditCollection } from "../../redux/slices/allCollections"
 import { ICollection } from "../../redux/slices/collection"
 import { THEMES } from '../../constant/themes';
-import { Themes } from '../../components/Themes/Themes'
+import { Themes } from '../../components/Themes/Themes';
 
-import './Collection.scss'
+import './Collection.scss';
 
 
-export const SelfCollection:React.FC = () => {
+export const SelfCollection: React.FC = () => {
+  const { i18n, t } = useTranslation();
+  const { id } = useParams();
   const dispatch: ThunkDispatch<Object[] | Object, void, AnyAction> = useDispatch();
   const userData = useSelector((state: RootState) => state.auth.userData.data);
   const isAuth = Boolean(userData);
@@ -55,9 +58,9 @@ export const SelfCollection:React.FC = () => {
   })
 
   const handleSendCollection = async (data: { title: string, description: string, themeCollection: string }) => {
-    if (title.length > 0 && description.length > 0 && themeCollection.length > 0) {
-      await dispatch(fetchUserCollection({ 'title': title, 'description': description, 'theme': themeCollection }));
-      isAuth && await dispatch(fetchUserAllCollections(userData._id));
+    if (title.length > 0 && description.length > 0 && themeCollection.length > 0 && id) {
+      await dispatch(fetchUserCollection({ 'title': title, 'description': description, 'theme': themeCollection, 'idUser': id }));
+      id && await dispatch(fetchUserAllCollections(id));
 
       setTitle('');
       setDescription('');
@@ -67,7 +70,7 @@ export const SelfCollection:React.FC = () => {
   const handlerEditCollection = async (data: { title: string, description: string, themeCollection: string }) => {
     if (title.length > 0 && description.length > 0 && themeCollection.length > 0 && currentCollectionId) {
       await dispatch(fetchEditCollection({ 'user': currentCollectionId, 'title': title, 'description': description, 'theme': themeCollection }));
-      isAuth && await dispatch(fetchUserAllCollections(userData._id));
+      id && await dispatch(fetchUserAllCollections(id));
       setTitle('');
       setDescription('');
       setThemeCollection('');
@@ -75,12 +78,12 @@ export const SelfCollection:React.FC = () => {
     }
   }
 
-  const handlerDeleteCollection = async (e:SyntheticEvent,id: string) => {
+  const handlerDeleteCollection = async (e: SyntheticEvent, index: string) => {
     e.preventDefault();
-    await dispatch(fetchDeleteCollection(id));
-    isAuth && await dispatch(fetchUserAllCollections(userData._id));
+    await dispatch(fetchDeleteCollection(index));
+    id && await dispatch(fetchUserAllCollections(id));
   }
-  const onClickEditCollection = (e:SyntheticEvent,obj: ICollection) => {
+  const onClickEditCollection = (e: SyntheticEvent, obj: ICollection) => {
     e.preventDefault();
     setTitle(obj.title);
     setDescription(obj.description);
@@ -93,7 +96,10 @@ export const SelfCollection:React.FC = () => {
   }
 
   useEffect(() => {
-    isAuth && (async () => await dispatch(fetchUserAllCollections(userData._id)))()
+    id && (async () => await dispatch(fetchUserAllCollections(id)))()
+  }, [id])
+  useEffect(() => {
+    isAuth && (async () => id && await dispatch(fetchUserAllCollections(id)))()
   }, [isAuth])
 
   if (!isAuth) {
@@ -103,23 +109,23 @@ export const SelfCollection:React.FC = () => {
 
   return (
     <>
-      <Typography variant="h5" classes={{root:'title-my-collection'}}>Your Collection</Typography>
+      <Typography variant="h5" classes={{ root: 'title-my-collection' }}>{t("yourCollections")}</Typography>
       {isEdit ? (<form onSubmit={handleSubmit(handlerEditCollection)} className='form-create-new-collection' >
         <Grid container spacing={0.5} direction="row"
           justifyContent="space-between"
           alignItems="center"
-          classes={{root:'field-add-new-collection'}}
-          >
+          classes={{ root: 'field-add-new-collection' }}
+        >
           <Grid item xs={4}>
-            <Typography variant='h5'>Title</Typography>
+            <Typography classes={{root:'title-create-collection-dashboard'}} variant='h5'>{t("titleItem")}</Typography>
             <TextField size="small" {...register('title', { value: title })} onChange={(e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setTitle(e.currentTarget.value)} fullWidth />
           </Grid>
           <Grid item xs={4}>
-            <Typography variant='h5'>Description</Typography>
+            <Typography classes={{root:'title-create-collection-dashboard'}} variant='h5'>{t("description")}</Typography>
             <TextField size="small"  {...register('description', { value: description })} onChange={(e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setDescription(e.currentTarget.value)} fullWidth />
           </Grid>
-          <Grid item xs={2}>
-            <Typography variant='h5'>Theme</Typography>
+          <Grid item xs={4}>
+            <Typography classes={{root:'title-create-collection-dashboard'}} variant='h5'>{t("theme")}</Typography>
             <TextField size="small" id="outlined-select-currency" SelectProps={{
               native: true,
             }}
@@ -131,24 +137,26 @@ export const SelfCollection:React.FC = () => {
               <Themes />
             </TextField>
           </Grid>
-          <Grid item xs={1}>
-            <Button type="submit" size="large" variant="contained" fullWidth>Edit</Button>
-          </Grid>
         </Grid>
+        <Grid sx={{marginTop:'10px'}}container>
+            <Grid item xs={12}>
+              <Button type="submit" size="small" variant="contained" fullWidth>{t("edit")}</Button>
+            </Grid>
+          </Grid>
       </form>) : (<form onSubmit={handleSubmit(handleSendCollection)} className='form-create-new-collection' >
         <Grid container spacing={0.5} direction="row"
           justifyContent="space-between"
           alignItems="center" sx={{ border: 'solid 1px', borderRadius: '5px', padding: '10px' }}>
           <Grid item xs={4}>
-            <Typography variant='h5'>Title</Typography>
+            <Typography classes={{root:'title-create-collection-dashboard'}} variant='h5'>{t("titleItem")}</Typography>
             <TextField size="small" {...register('title', { value: title })} onChange={(e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setTitle(e.currentTarget.value)} fullWidth />
           </Grid>
           <Grid item xs={4}>
-            <Typography variant='h5'>Description</Typography>
+            <Typography classes={{root:'title-create-collection-dashboard'}} variant='h5'>{t("description")}</Typography>
             <TextField size="small"  {...register('description', { value: description })} onChange={(e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setDescription(e.currentTarget.value)} fullWidth />
           </Grid>
-          <Grid item xs={2}>
-            <Typography variant='h5'>Theme</Typography>
+          <Grid item xs={4}>
+            <Typography classes={{root:'title-create-collection-dashboard'}} variant='h5'>{t("theme")}</Typography>
             <TextField size="small" id="outlined-select-currency" SelectProps={{
               native: true,
             }}
@@ -160,8 +168,10 @@ export const SelfCollection:React.FC = () => {
               <Themes />
             </TextField>
           </Grid>
-          <Grid item xs={1}>
-            <Button type="submit" size="large" variant="contained" fullWidth>Create</Button>
+          <Grid sx={{marginTop:'10px'}}container>
+            <Grid item xs={12}>
+              <Button type="submit" size="small" variant="contained" fullWidth>{t("create")}</Button>
+            </Grid>
           </Grid>
         </Grid>
       </form>)}
@@ -170,19 +180,19 @@ export const SelfCollection:React.FC = () => {
           <List>
             {isLoaded && collectionsData.map((obj: ICollection, index) =>
               <Paper elevation={2} key={obj._id} sx={{ marginBottom: '10px' }}>
-                <Link className='link-collection-items-user' to={`/collection/items/${obj._id}`}>
-                  <ListItemButton key={obj._id} >
+                <Link className='link-collection-items-user' to={`/collection/items/${id}/${obj._id}`}>
+                  <ListItemButton key={obj._id} sx={{ color: 'text.primary' }} >
                     <Grid container>
-                      <Grid xs={3} item>{obj.title}</Grid>
-                      <Grid xs={3} item>{obj.description}</Grid>
-                      <Grid xs={3} item>{obj.theme}</Grid>
+                      <Grid classes={{ root: 'collection-user' }} xs={3} item>{obj.title}</Grid>
+                      <Grid classes={{ root: 'collection-user' }} xs={3} item>{obj.description}</Grid>
+                      <Grid classes={{ root: 'collection-user' }} xs={3} item>{obj.theme}</Grid>
                       <Grid xs={1.5} item>
-                        <IconButton id={obj._id} onClick={(e) => onClickEditCollection(e,obj)} aria-label="edit">
+                        <IconButton id={obj._id} onClick={(e) => onClickEditCollection(e, obj)} aria-label="edit">
                           <EditNoteIcon fontSize='medium' />
                         </IconButton>
                       </Grid>
                       <Grid xs={1.5} item>
-                        <IconButton onClick={(e) => handlerDeleteCollection(e,obj._id)} aria-label="delete">
+                        <IconButton onClick={(e) => handlerDeleteCollection(e, obj._id)} aria-label="delete">
                           <DeleteIcon fontSize='small' />
                         </IconButton>
                       </Grid>
@@ -193,12 +203,8 @@ export const SelfCollection:React.FC = () => {
             )
             }
           </List>
-
         </Grid>
-
       </Grid>
-
-
     </>
   )
 }
