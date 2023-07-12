@@ -3,8 +3,10 @@ import axios from 'axios';
 import { instance } from '../../constant/apiConfig';
 
 
-
-export interface IItem {
+interface IObjectKeys {
+  [key: string]: string |number|string[];
+}
+export interface IItem extends IObjectKeys {
   title: string,
   tags: string[],
   collectionName: string,
