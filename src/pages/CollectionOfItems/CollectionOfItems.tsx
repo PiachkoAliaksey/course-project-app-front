@@ -30,7 +30,6 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
 
-
 import { IItem, fetchUserCollectionItem } from '../../redux/slices/item';
 import { fetchEditCountItemCollection } from '../../redux/slices/allCollections';
 import { fetchUserAllCollectionItem, fetchDeleteCollectionItem, fetchEditCollectionItem } from '../../redux/slices/allCollectionItems';
@@ -94,9 +93,6 @@ export const CollectionOfItems: React.FC = () => {
     setItemsData(filteredRows)
   }
 
-  // const handlerClickFilterField = ()=>{
-  // isLoadedItemsData&&setItemsData(items.allCollectionItems);
-  // }
 
   const filteredRows: IItem[] = useMemo(() => {
     if (searchField.length === 0 && isLoadedItemsData) return items.allCollectionItems
