@@ -1,13 +1,12 @@
 import { createSlice, createAsyncThunk,AsyncThunk} from '@reduxjs/toolkit';
-import axios from 'axios';
 import { instance } from '../../constant/apiConfig';
-
 
 
 export interface ICollection{
   title: string,
   description: string,
   theme: string,
+  customFields:{customFieldName:string}[],
   user: string,
   _id: string,
   countOfItems:number,
@@ -25,8 +24,12 @@ interface IInitialState {
 
 
 
-export const fetchUserCollection = createAsyncThunk('collection/fetchUserCollection', async (params:{title: string, description: string,theme:string,idUser:string}) => {
+export const addUserCollection = createAsyncThunk('collection/addUserCollection', async (params:{title: string, description: string,theme:string,idUser:string}) => {
   const { data } = await instance.post('/collection',params);
+  return data;
+})
+export const addUserCollectionWithCustomField = createAsyncThunk('collection/addUserCollectionWithCustomField', async (params:{title: string, description: string,theme:string,idUser:string,customFields:{customFieldName:string}[]}) => {
+  const { data } = await instance.post('/collectionWithCustomField',params);
   return data;
 })
 
@@ -44,15 +47,27 @@ const collectionSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers:(builder)=> {
-    builder.addCase(fetchUserCollection.pending, (state) => {
+    builder.addCase(addUserCollection.pending, (state) => {
       state.collection.item={};
       state.collection.status = 'loading';
     })
-    builder.addCase(fetchUserCollection.fulfilled, (state, action) => {
+    builder.addCase(addUserCollection.fulfilled, (state, action) => {
       state.collection.item = action.payload
       state.collection.status = 'loaded'
     })
-    builder.addCase(fetchUserCollection.rejected, (state) => {
+    builder.addCase(addUserCollection.rejected, (state) => {
+      state.collection.item={};
+      state.collection.status = 'error'
+    })
+    builder.addCase(addUserCollectionWithCustomField.pending, (state) => {
+      state.collection.item={};
+      state.collection.status = 'loading';
+    })
+    builder.addCase(addUserCollectionWithCustomField.fulfilled, (state, action) => {
+      state.collection.item = action.payload
+      state.collection.status = 'loaded'
+    })
+    builder.addCase(addUserCollectionWithCustomField.rejected, (state) => {
       state.collection.item={};
       state.collection.status = 'error'
     })
