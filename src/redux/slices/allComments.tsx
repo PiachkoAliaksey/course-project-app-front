@@ -1,7 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { instance } from '../../constant/apiConfig';
 
-
+interface IComment {
+  from: string,
+  message: string,
+  created: string,
+}
+export interface IInitialStateAllComments {
+  messages: IComment[] | [],
+  status: string
+}
 
 
 export const fetchAllComments = createAsyncThunk('message/fetchAllMessages', async (params: { to: string }) => {
@@ -9,16 +17,7 @@ export const fetchAllComments = createAsyncThunk('message/fetchAllMessages', asy
   return data;
 })
 
-interface IComment{
-  from: string,
-  message: string,
-  created: string,
-}
 
-export interface IInitialStateAllComments {
-  messages: IComment[] | [],
-  status: string
-}
 const initialState = {
   messages: [],
   status: 'loading'
@@ -35,12 +34,12 @@ const allCommentsSlice = createSlice({
       state.status = 'loading';
     })
     builder.addCase(fetchAllComments.fulfilled, (state, action) => {
-      state.messages = action.payload
-      state.status = 'loaded'
+      state.messages = action.payload;
+      state.status = 'loaded';
     })
     builder.addCase(fetchAllComments.rejected, (state) => {
       state.messages = [];
-      state.status = 'error'
+      state.status = 'error';
     })
 
   }
