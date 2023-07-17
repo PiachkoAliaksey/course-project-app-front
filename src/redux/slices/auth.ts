@@ -1,6 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { config } from 'process';
 import { instance } from '../../constant/apiConfig';
 
 interface IAuthData {
@@ -18,8 +16,6 @@ interface IAuthData {
 }
 
 
-
-
 export const fetchUserData = createAsyncThunk('fetch/fetchUserData', async (params:{email: string, password: string}) => {
   const { data } = await instance.post('/auth/login', params);
   return data;
@@ -29,8 +25,6 @@ export const fetchAuthMe = createAsyncThunk('fetch/fetchAuthMe', async () => {
   const { data } = await instance.get('/auth/me');
   return data;
 })
-
-
 
 export const fetchRegister = createAsyncThunk('fetch/fetchRegister', async (params:{email: string, password: string,fullName:string}) => {
   const { data } = await instance.post('/auth/signup', JSON.stringify(params), {
@@ -65,7 +59,7 @@ const authSlice = createSlice({
     })
     builder.addCase(fetchUserData.fulfilled, (state, action) => {
       state.userData.status = 'loaded'
-      state.userData.data = action.payload
+      state.userData.data = action.payload;
     })
     builder.addCase(fetchUserData.rejected, (state) => {
       state.userData.status = 'error';
@@ -76,8 +70,8 @@ const authSlice = createSlice({
       state.userData.data = null;
     })
     builder.addCase(fetchAuthMe.fulfilled, (state, action) => {
-      state.userData.status = 'loaded'
-      state.userData.data = action.payload
+      state.userData.status = 'loaded';
+      state.userData.data = action.payload;
     })
     builder.addCase(fetchAuthMe.rejected, (state) => {
       state.userData.status = 'error';
@@ -88,8 +82,8 @@ const authSlice = createSlice({
       state.userData.data = null;
     })
     builder.addCase(fetchRegister.fulfilled, (state, action) => {
-      state.userData.status = 'loaded'
-      state.userData.data = action.payload
+      state.userData.status = 'loaded';
+      state.userData.data = action.payload;
     })
     builder.addCase(fetchRegister.rejected, (state) => {
       state.userData.status = 'error';
