@@ -1,14 +1,14 @@
 import { createSlice, createAsyncThunk, AsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
 import { instance } from '../../constant/apiConfig';
 
 
 interface IObjectKeys {
-  [key: string]: string |number|string[];
+  [key: string]: string | number | Array<string | { customFieldName: string }>;
 }
 export interface IItem extends IObjectKeys {
   title: string,
   tags: string[],
+  customFields: { customFieldName: string }[],
   collectionName: string,
   user: string,
   _id: string,
@@ -18,7 +18,7 @@ export interface IItem extends IObjectKeys {
   __v: number
 }
 
-interface IInitialState {
+export interface IInitialState {
   itemCollection: {
     item: IItem | {},
     status: string
@@ -27,11 +27,10 @@ interface IInitialState {
     likes: string[],
     status: string
   }
-
 }
 
 
-export const fetchUserCollectionItem = createAsyncThunk('collection/fetchUserCollectionItem', async (params: { title: string, tags: string[], collectionName: string,idUser:string }) => {
+export const addUserCollectionItem = createAsyncThunk('collection/addUserCollectionItem', async (params: { title: string, tags: string[], collectionName: string, idUser: string, customFields: { customFieldName: string; }[] | undefined }) => {
   const { data } = await instance.post('/collection/items', params);
   return data;
 })
@@ -68,29 +67,29 @@ const itemSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchUserCollectionItem.pending, (state) => {
+    builder.addCase(addUserCollectionItem.pending, (state) => {
       state.itemCollection.item = {};
       state.itemCollection.status = 'loading';
     })
-    builder.addCase(fetchUserCollectionItem.fulfilled, (state, action) => {
-      state.itemCollection.item = action.payload
-      state.itemCollection.status = 'loaded'
+    builder.addCase(addUserCollectionItem.fulfilled, (state, action) => {
+      state.itemCollection.item = action.payload;
+      state.itemCollection.status = 'loaded';
     })
-    builder.addCase(fetchUserCollectionItem.rejected, (state) => {
+    builder.addCase(addUserCollectionItem.rejected, (state) => {
       state.itemCollection.item = {};
-      state.itemCollection.status = 'error'
+      state.itemCollection.status = 'error';
     })
     builder.addCase(getUserCollectionItem.pending, (state) => {
       state.itemCollection.item = {};
       state.itemCollection.status = 'loading';
     })
     builder.addCase(getUserCollectionItem.fulfilled, (state, action) => {
-      state.itemCollection.item = action.payload
-      state.itemCollection.status = 'loaded'
+      state.itemCollection.item = action.payload;
+      state.itemCollection.status = 'loaded';
     })
     builder.addCase(getUserCollectionItem.rejected, (state) => {
       state.itemCollection.item = {};
-      state.itemCollection.status = 'error'
+      state.itemCollection.status = 'error';
     })
     builder.addCase(fetchUserLike.pending, (state) => {
       state.likesItemCollection.likes = [];
@@ -99,14 +98,14 @@ const itemSlice = createSlice({
     builder.addCase(fetchUserLike.fulfilled, (state, action) => {
       const { arg: { idItem, idUser, isLiked } } = action.meta
       if (idItem && idUser) {
-          isLiked ? (state.likesItemCollection.likes.push(idUser)) : (state.likesItemCollection.likes = state.likesItemCollection.likes.filter(val => val !== idUser) )
+        isLiked ? (state.likesItemCollection.likes.push(idUser)) : (state.likesItemCollection.likes = state.likesItemCollection.likes.filter(val => val !== idUser))
 
       }
-      state.likesItemCollection.status = 'loaded'
+      state.likesItemCollection.status = 'loaded';
     })
     builder.addCase(fetchUserLike.rejected, (state) => {
       state.likesItemCollection.likes = [];
-      state.likesItemCollection.status = 'error'
+      state.likesItemCollection.status = 'error';
     })
 
     builder.addCase(getLikesItem.pending, (state) => {
@@ -114,12 +113,12 @@ const itemSlice = createSlice({
       state.likesItemCollection.status = 'loading';
     })
     builder.addCase(getLikesItem.fulfilled, (state, action) => {
-      state.likesItemCollection.likes = action.payload
-      state.likesItemCollection.status = 'loaded'
+      state.likesItemCollection.likes = action.payload;
+      state.likesItemCollection.status = 'loaded';
     })
     builder.addCase(getLikesItem.rejected, (state) => {
       state.likesItemCollection.likes = [];
-      state.likesItemCollection.status = 'error'
+      state.likesItemCollection.status = 'error';
     })
 
   }
