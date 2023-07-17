@@ -38,23 +38,18 @@ export const Login: React.FC = () => {
   };
 
   const onSubmit = async (values: { email: string, password: string }) => {
-    console.log(values);
     const data = await dispatch(fetchUserData(values));
     if (!data.payload) {
-      console.log('here')
       setNotCorrectData(true);
       setOpen(true);
-      // return alert()
     }
 
     if (data.payload.status === 'blocked') {
-      console.log('here')
       setStatusBlocked(true);
       setOpen(true);
-      // return alert('User is blocked')
     }
 
-    if ('token' in data.payload&&data.payload.status !== 'blocked') {
+    if ('token' in data.payload && data.payload.status !== 'blocked') {
       window.localStorage.setItem('token', data.payload.token)
     }
   }
@@ -74,7 +69,7 @@ export const Login: React.FC = () => {
         {statusBlocked && (<DialogTitle id="alert-dialog-title">
           {t("userIsBlocked")}
         </DialogTitle>)}
-        {notCorrectData&&(<DialogTitle id="alert-dialog-title">
+        {notCorrectData && (<DialogTitle id="alert-dialog-title">
           {t("pleaseWriteFullNameOrPasswordCorrect")}
         </DialogTitle>)}
         <DialogActions>
@@ -108,6 +103,5 @@ export const Login: React.FC = () => {
         </form>
       </Paper>
     </>
-
   );
 };
