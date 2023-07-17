@@ -9,27 +9,24 @@ import Box from '@mui/material/Box';
 
 import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from "react-i18next";
-import { io, Socket } from 'socket.io-client'
 
 import Paper, { Button, ListItem } from '@mui/material/';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 
 import Grid from '@mui/material/Grid';
-import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 
 
-import { stringAvatar } from '../utils/createNameAvatar';
-import { useForm } from "react-hook-form";
+
 import { getFiveLastItem } from '../redux/slices/allCollectionItems';
 import { fetchCloudTags } from '../redux/slices/allCollectionItems';
 import { fetchUserLargestCollection } from '../redux/slices/allCollections';
 import { IItem } from '../redux/slices/item';
 import { ICollection } from '../redux/slices/collection';
 import { SkeletonListLoader } from '../components/TablesRowsLoader/SkeletonListLoader';
-import { SkeletonListFiveLargestCollection } from '../components/TablesRowsLoader/SkeletonListFiveLargestCollection'
-import './Home.scss'
+import { SkeletonListFiveLargestCollection } from '../components/TablesRowsLoader/SkeletonListFiveLargestCollection';
+import './Home.scss';
 
 
 export interface IUser {
@@ -41,11 +38,8 @@ export interface IUser {
 }
 
 
-
-
 export const Home: React.FC = () => {
   const { i18n, t } = useTranslation();
-
   const navigate = useNavigate();
   const dispatch: ThunkDispatch<IItem[], void, AnyAction> = useDispatch();
   const userData: { data: IUser, status: string } = useSelector((state: RootState) => state.auth.userData);
@@ -53,7 +47,7 @@ export const Home: React.FC = () => {
   const collectionsData: ICollection[] = useSelector((state: RootState) => state.collections.allCollections.items);
   const isLoadedCollections = Boolean(collectionsData);
   const isLoadedItemsData = Boolean(items.allCollectionItems);
-  console.log(isLoadedItemsData && items.allCollectionItems)
+
   const isLoadedTags = Boolean(allTags.tags);
   const isLoadingUser = userData.status === 'loading';
   const isAuth = Boolean(userData.data);
@@ -63,9 +57,11 @@ export const Home: React.FC = () => {
     isLoadedItemsData && dispatch(getFiveLastItem());
 
   }, [isLoadedItemsData])
+
   useEffect(() => {
     isLoadedTags && dispatch(fetchCloudTags());
   }, [isLoadedTags])
+
   useEffect(() => {
     isLoadedCollections && dispatch(fetchUserLargestCollection());
   }, [isLoadedCollections])
@@ -77,9 +73,9 @@ export const Home: React.FC = () => {
           {isLoadedTags && allTags.tags.map((tag: string[]) => <Link key={uuidv4()} className='link-tag' to={`/search/${tag.slice(1)}`}><ListItemButton sx={{ color: 'text.primary' }} key={uuidv4()}>{tag}</ListItemButton></Link>)}
         </List>
       </Grid>
-      <Grid classes={{root:'main-container-items-collections'}} xs={12} item>
+      <Grid classes={{ root: 'main-container-items-collections' }} xs={12} item>
         <Box sx={{ padding: '10px', borderRadius: '5px', boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px', marginBottom: '10px' }}>
-          <Typography classes={{root:'title-main-container-items-collections'}} variant='h5'>{t("listLastItems")}</Typography>
+          <Typography classes={{ root: 'title-main-container-items-collections' }} variant='h5'>{t("listLastItems")}</Typography>
           <List>
             <ListItem>
               <Grid container classes={{ root: 'title-list-five-last-items' }}>
@@ -99,16 +95,14 @@ export const Home: React.FC = () => {
                 </ListItemButton>
               </Link>)) : (<SkeletonListLoader rowsNum={5} />)}
           </List>
-
         </Box>
         <Box sx={{ padding: '10px', borderRadius: '5px', boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px' }}>
-          <Typography classes={{root:'title-main-container-items-collections'}} variant='h5'>{t("listLargestCollection")}</Typography>
+          <Typography classes={{ root: 'title-main-container-items-collections' }} variant='h5'>{t("listLargestCollection")}</Typography>
           <List >
             {isLoadedCollections ? (collectionsData.map((obj) => <ListItem classes={{ root: 'last-added-item' }} key={uuidv4()}>{obj.title}</ListItem>)) : (<SkeletonListFiveLargestCollection itemNum={5} />)}
           </List>
         </Box>
       </Grid>
-
     </Grid>
   );
 };
