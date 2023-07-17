@@ -5,7 +5,6 @@ import { AnyAction } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { io, Socket } from 'socket.io-client'
 
-// import { SideBlock } from "./SideBlock/SideBlock";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
@@ -56,10 +55,6 @@ export const CommentsBlock: React.FC<ICommentsBlock> = ({ children, itemIndex, s
 
   useEffect(() => {
     socket.on('comment-receive', (data) => {
-      // const today = new Date();
-      // const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-      // const weekday = ["Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"];
-      // const month = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
       setCommentArrival({ from: data.senderUser, message: data.message, created: date });
     });
   }, []);
