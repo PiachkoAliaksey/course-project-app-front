@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk, AsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
 import { IUser } from '../../pages/AdminPanel/AdminPanel';
 import { instance } from '../../constant/apiConfig';
 
@@ -9,6 +8,7 @@ export const fetchUsersTable = createAsyncThunk('table/fetchUserTable', async ()
   const { data } = await instance.get('/adminDashboard');
   return data;
 })
+
 export const fetchDeleteUser = createAsyncThunk('table/fetchDeleteUser', async (id: string) => {
   return await instance.delete(`/adminDashboard/delete/${id}`);
 }
@@ -49,12 +49,12 @@ const usersTableSlice = createSlice({
       state.users.status = 'loading';
     })
     builder.addCase(fetchUsersTable.fulfilled, (state, action) => {
-      state.users.items = action.payload
-      state.users.status = 'loaded'
+      state.users.items = action.payload;
+      state.users.status = 'loaded';
     })
     builder.addCase(fetchUsersTable.rejected, (state) => {
       state.users.items = [];
-      state.users.status = 'error'
+      state.users.status = 'error';
     })
     builder.addCase(fetchDeleteUser.pending, (state) => {
       state.users.items = [];
@@ -71,14 +71,14 @@ const usersTableSlice = createSlice({
     })
     builder.addCase(fetchDeleteUser.rejected, (state) => {
       state.users.items = [];
-      state.users.status = 'error'
+      state.users.status = 'error';
     })
     builder.addCase(fetchStatusStatusUser.pending, (state) => {
       state.users.items = [];
       state.users.status = 'loading';
     })
     builder.addCase(fetchStatusStatusUser.fulfilled, (state, action) => {
-      state.users.status = 'loaded'
+      state.users.status = 'loaded';
       const { arg: { user, status } } = action.meta
       if (user) {
         const toggleElement = state.users.items.find(val => val._id === user);
@@ -96,7 +96,7 @@ const usersTableSlice = createSlice({
       state.users.status = 'loading';
     })
     builder.addCase(fetchAccess.fulfilled, (state, action) => {
-      state.users.status = 'loaded'
+      state.users.status = 'loaded';
       const { arg: { user, position } } = action.meta
       if (user) {
         const toggleElement = state.users.items.find(val => val._id === user);
