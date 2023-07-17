@@ -41,7 +41,6 @@ export const Registration: React.FC = () => {
     const data = await dispatch(fetchRegister(values));
     if (!data.payload) {
       setOpen(true)
-      // return alert('Not available registration, user already exist')
     }
     if (data.payload && 'token' in data.payload) {
       window.localStorage.setItem('token', data.payload.token)
@@ -89,6 +88,5 @@ export const Registration: React.FC = () => {
         </form>
       </Paper>
     </>
-
   );
 };
