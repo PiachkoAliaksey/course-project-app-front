@@ -4,13 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AnyAction } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 
-
 import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
-
-
-
-
 import Container from "@mui/material/Container";
+
 import { Header } from "./components";
 import { Home } from "./pages/Home";
 import { AdminPanel } from './pages/AdminPanel/AdminPanel';
@@ -20,11 +16,11 @@ import { SelfCollection } from './pages/Collection/Collection';
 import { CollectionOfItems } from './pages/CollectionOfItems/CollectionOfItems';
 import { Item } from './pages/Item/Item';
 import { SearchPage } from './pages/SearchPage/SearchPage';
-import { SearchPageItems } from './pages/SearchPageItems/SearchPageItems'
+import { SearchPageItems } from './pages/SearchPageItems/SearchPageItems';
 import { fetchAuthMe } from './redux/slices/auth';
 import { IItem } from './redux/slices/item';
-import { io } from 'socket.io-client'
-const socket = io('http://localhost:4444')
+import { io } from 'socket.io-client';
+const socket = io('http://localhost:4444');
 
 import './sass/style.scss';
 
