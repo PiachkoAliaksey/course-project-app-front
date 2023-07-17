@@ -5,7 +5,7 @@ import { RootState } from "redux/store";
 import { ThunkDispatch } from "redux-thunk";
 import { Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -30,9 +30,9 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
 
-import { IItem, fetchUserCollectionItem } from '../../redux/slices/item';
+import { IItem, addUserCollectionItem } from '../../redux/slices/item';
 import { fetchEditCountItemCollection } from '../../redux/slices/allCollections';
-import { fetchUserAllCollectionItem, fetchDeleteCollectionItem, fetchEditCollectionItem } from '../../redux/slices/allCollectionItems';
+import { fetchUserAllCollectionItem, fetchDeleteCollectionItem, fetchEditCollectionItem, fetchCustomFields } from '../../redux/slices/allCollectionItems';
 import { TableItemLoader } from '../../components/TablesRowsLoader/TableItemsLoader';
 import { IUser } from '../../pages/AdminPanel/AdminPanel';
 
@@ -45,7 +45,8 @@ export const CollectionOfItems: React.FC = () => {
   const { userId, collectionId } = useParams();
   const dispatch: ThunkDispatch<Object[] | Object, void, AnyAction> = useDispatch();
   const userData: IUser = useSelector((state: RootState) => state.auth.userData.data);
-  const { items, allTags } = useSelector((state: RootState) => state.items);
+  const { items, allTags, customFields } = useSelector((state: RootState) => state.items);
+  const isCustomFieldsLoaded = Boolean(customFields.fields);
   const isLoadedItemsData = Boolean(items.allCollectionItems);
   const isAuth = Boolean(userData);
 
@@ -54,11 +55,30 @@ export const CollectionOfItems: React.FC = () => {
   const [currentItemId, setCurrentItemId] = useState('');
   const [isEdit, setIsEdit] = useState(false);
 
+  const { register, control, handleSubmit, setError, formState: { errors, isValid } } = useForm({
+    values: {
+      title: title,
+      tags: tags
+    },
+    defaultValues: {
+      title: '',
+      tags: '',
+      list: [{ customFieldName: '' }]
+
+    },
+    mode: 'onChange'
+  });
+  const { append, remove } = useFieldArray({
+    control,
+    name: "list"
+  });
+
+
+  //state fot popover
   const [anchorEl, setAnchorEl] = React.useState<HTMLInputElement | HTMLDivElement | null>(null);
 
   //basic state for sorting items
   const [itemsData, setItemsData] = useState<IItem[]>([]);
-  console.log(itemsData)
   const [currentIndexTableHeader, setCurrentIndexTableHeader] = useState<number | null>(null);
   const [sortField, setSortField] = useState("");
   const [order, setOrder] = useState("asc");
@@ -67,10 +87,12 @@ export const CollectionOfItems: React.FC = () => {
     { label: "titleItem", field: "title" },
     { label: "tags", field: "tags" },
   ];
+
   //basic state for filter items
   const [isOpenFilterField, setIsOpenFilterField] = useState(false);
   const [searchField, setSearchField] = useState("");
-  //
+
+
   //function for sorting items
   const handleSorting = (sortField: string, sortOrder: string) => {
     if (sortField && isLoadedItemsData) {
@@ -87,7 +109,8 @@ export const CollectionOfItems: React.FC = () => {
       setItemsData(sorted);
     }
   };
-  //function for set filtering  string !!!! исправить
+
+  //function for set filtering  string
   const handlerFilterItems = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setSearchField(e.target.value)
     setItemsData(filteredRows)
@@ -109,7 +132,7 @@ export const CollectionOfItems: React.FC = () => {
             if (found) {
               list.push(found);
             }
-          } else if (Array.isArray(value) && value.includes(searchField.toLowerCase())) {
+          } else if (Array.isArray(value) && value.every((val) => typeof val !== 'object') && value.includes(searchField.toLowerCase())) {
             const found = items.allCollectionItems.find((obj: IItem) => obj._id === current._id);
             if (found) {
               list.push(found);
@@ -138,32 +161,21 @@ export const CollectionOfItems: React.FC = () => {
 
   //function set basic state for sorting
   const handleSortingItems = (order: string, field: string, index: number) => {
-
     setCurrentIndexTableHeader(index);
-    // const sortOrder =
-    //   field === sortField && order === "asc" ? "desc" : "asc";
     setSortField(field);
     setOrder(order);
     handleSorting(field, order);
   };
+
   //function show filter  field
   const handleShowFieldFilter = () => {
     setIsOpenFilterField(!isOpenFilterField)
   }
 
 
-  const { register, handleSubmit, setError, formState: { errors, isValid } } = useForm({
-    values: {
-      title: title,
-      tags: tags
-    },
-    mode: 'onChange'
-  })
-
-
-  const handleSendItem = async (data: { title: string, tags: string }) => {
+  const handleSendItem = async (data: { title: string, tags: string, list?: { customFieldName: string }[] }) => {
     if (title.length > 0 && tags.length > 0 && collectionId && userId) {
-      await dispatch(fetchUserCollectionItem({ 'title': title, 'tags': tags.split(' '), 'collectionName': collectionId, 'idUser': userId }));
+      await dispatch(addUserCollectionItem({ 'title': title, 'tags': tags.split(' '), 'collectionName': collectionId, 'idUser': userId, 'customFields': data.list }));
       await dispatch(fetchUserAllCollectionItem(collectionId));
       setTitle('');
       setTags('');
@@ -178,7 +190,7 @@ export const CollectionOfItems: React.FC = () => {
 
   }
 
-  const handlerEditItem = async (data: { title: string, tags: string }) => {
+  const handlerEditItem = async (data: { title: string, tags: string, list?: { customFieldName: string }[] }) => {
     if (title.length > 0 && tags.length > 0 && currentItemId && collectionId) {
       await dispatch(fetchEditCollectionItem({ 'idItem': currentItemId, 'title': title, 'tags': tags.split(' '), 'collectionName': collectionId }));
       await dispatch(fetchUserAllCollectionItem(collectionId));
@@ -197,14 +209,17 @@ export const CollectionOfItems: React.FC = () => {
   }
 
   useEffect(() => {
-    collectionId && dispatch(fetchUserAllCollectionItem(collectionId))
+    collectionId && dispatch(fetchUserAllCollectionItem(collectionId));
+    collectionId && dispatch(fetchCustomFields(collectionId));
   }, [collectionId])
+
 
 
 
   if (!isAuth) {
     return <Navigate to='/'></Navigate>
   }
+
   return (
     <>
       <TableContainer component={Paper} elevation={2} sx={{ marginBottom: '20px', padding: '5px' }}>
@@ -222,8 +237,10 @@ export const CollectionOfItems: React.FC = () => {
                 <IconButton size="small" onClick={() => handleSortingItems('desc', field, index)} sx={{ background: (currentIndexTableHeader === index && order === 'desc' ? 'blue' : 'none') }}><ArrowDownwardIcon fontSize="small" /></IconButton>
 
               </TableCell>)}
-              <TableCell ><Typography>{t("edit")}</Typography></TableCell>
-              <TableCell > <Typography>{t("btndelete")}</Typography></TableCell>
+              {isCustomFieldsLoaded && customFields.fields.map((obj: { customFieldName: string }) => <TableCell key={uuidv4()} ><Typography>{obj.customFieldName}</Typography></TableCell>)}
+
+              <TableCell ><Typography></Typography></TableCell>
+              <TableCell > <Typography></Typography></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -240,6 +257,7 @@ export const CollectionOfItems: React.FC = () => {
                     </Link>
                   </TableCell>
                   <TableCell><List>{obj.tags.map((val, index) => <ListItem key={uuidv4()}>{val}</ListItem>)}</List></TableCell>
+                  {obj.customFields.map((obj) => <TableCell key={uuidv4()}>{obj.customFieldName}</TableCell>)}
                   <TableCell>
                     <IconButton id={obj._id} onClick={(e) => onClickEditItem(e, obj)} aria-label="edit">
                       <EditNoteIcon fontSize='medium' />
@@ -260,6 +278,7 @@ export const CollectionOfItems: React.FC = () => {
                     </Link>
                   </TableCell>
                   <TableCell><List>{obj.tags.map((val, index) => <ListItem key={uuidv4()}>{val}</ListItem>)}</List></TableCell>
+                  {obj.customFields.map((obj) => <TableCell key={uuidv4()}>{obj.customFieldName}</TableCell>)}
                   <TableCell>
                     <IconButton id={obj._id} onClick={(e) => onClickEditItem(e, obj)} aria-label="edit">
                       <EditNoteIcon fontSize='medium' />
@@ -313,9 +332,14 @@ export const CollectionOfItems: React.FC = () => {
                   horizontal: 'left',
                 }}
               >
-                <Typography sx={{ p: 2 }}>Please, type tags with space like '#good #luck ...'</Typography>
+                <Typography sx={{ p: 2 }}>Please, type tags with space like this '#good #luck ...'</Typography>
               </Popover>
             </Grid>
+          </Grid>
+          <Grid container sx={{ marginBottom: '10px' }}>
+            {isCustomFieldsLoaded && customFields.fields.length > 0 && customFields.fields.map((obj: { customFieldName: string }, index: number) => <Grid item xs={12} key={uuidv4()} sx={{ marginBottom: '5px' }}><Typography classes={{ root: 'title-dashboard-add-item' }} variant='h5'>{obj.customFieldName}</Typography>
+
+              <TextField size="small" {...register(`list.${index}.customFieldName`)} fullWidth /></Grid>)}
           </Grid>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -324,8 +348,6 @@ export const CollectionOfItems: React.FC = () => {
           </Grid>
 
         </form>)}
-
-
       </Paper>
     </>
   )
