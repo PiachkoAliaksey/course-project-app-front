@@ -11,7 +11,6 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Paper from "@mui/material/Paper";
 import DeleteIcon from '@mui/icons-material/Delete';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
@@ -19,12 +18,10 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Grid from '@mui/material/Grid';
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import MenuItem from '@mui/material/MenuItem';
-import { Button } from '@mui/material';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { Box, Button, ListItem } from '@mui/material';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
-
-import { fetchUserCollection } from "../../redux/slices/collection";
+import { addUserCollection, addUserCollectionWithCustomField } from "../../redux/slices/collection";
 import { fetchUserAllCollections, fetchDeleteCollection, fetchEditCollection } from "../../redux/slices/allCollections"
 import { ICollection } from "../../redux/slices/collection"
 import { THEMES } from '../../constant/themes';
@@ -42,6 +39,7 @@ export const SelfCollection: React.FC = () => {
   const collectionsData: ICollection[] = useSelector((state: RootState) => state.collections.allCollections.items);
   const isLoaded = Boolean(collectionsData);
 
+  const [customFields, setCustomFields] = useState<{ customFieldName: string }[]>([]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [themeCollection, setThemeCollection] = useState('');
@@ -57,16 +55,38 @@ export const SelfCollection: React.FC = () => {
     mode: 'onChange'
   })
 
-  const handleSendCollection = async (data: { title: string, description: string, themeCollection: string }) => {
-    if (title.length > 0 && description.length > 0 && themeCollection.length > 0 && id) {
-      await dispatch(fetchUserCollection({ 'title': title, 'description': description, 'theme': themeCollection, 'idUser': id }));
-      id && await dispatch(fetchUserAllCollections(id));
+  const handleOnChangeField = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+    const currentFieldTargetValue = e.target.value;
+    const fields = [...customFields];
+    fields[index]['customFieldName'] = currentFieldTargetValue;
+    setCustomFields(fields);
+  }
 
+
+  const handlerAddCustomField = () => {
+    setCustomFields([...customFields, { customFieldName: '' }])
+  }
+
+  const handlerDeleteCustomField = (index: number) => {
+    setCustomFields([...customFields.filter((obj, i) => i !== index)])
+  }
+
+  const handleSendCollection = async (data: { title: string, description: string, themeCollection: string }) => {
+    if (title.length > 0 && description.length > 0 && themeCollection.length > 0 && id && customFields.length === 0) {
+      await dispatch(addUserCollection({ 'title': title, 'description': description, 'theme': themeCollection, 'idUser': id }));
+      id && await dispatch(fetchUserAllCollections(id));
+      setTitle('');
+      setDescription('');
+      setThemeCollection('');
+    } else if (title.length > 0 && description.length > 0 && themeCollection.length > 0 && id && customFields.length > 0 && customFields.every(obj => obj.customFieldName.length > 0)) {
+      await dispatch(addUserCollectionWithCustomField({ 'title': title, 'description': description, 'theme': themeCollection, 'idUser': id, 'customFields': customFields }));
+      id && await dispatch(fetchUserAllCollections(id));
       setTitle('');
       setDescription('');
       setThemeCollection('');
     }
   }
+
   const handlerEditCollection = async (data: { title: string, description: string, themeCollection: string }) => {
     if (title.length > 0 && description.length > 0 && themeCollection.length > 0 && currentCollectionId) {
       await dispatch(fetchEditCollection({ 'user': currentCollectionId, 'title': title, 'description': description, 'theme': themeCollection }));
@@ -83,6 +103,7 @@ export const SelfCollection: React.FC = () => {
     await dispatch(fetchDeleteCollection(index));
     id && await dispatch(fetchUserAllCollections(id));
   }
+
   const onClickEditCollection = (e: SyntheticEvent, obj: ICollection) => {
     e.preventDefault();
     setTitle(obj.title);
@@ -91,9 +112,12 @@ export const SelfCollection: React.FC = () => {
     setCurrentCollectionId(obj._id);
     setIsEdit(true)
   }
+
+
   const handlerSubmitEditCollection = () => {
     setIsEdit(false);
   }
+
 
   useEffect(() => {
     id && (async () => await dispatch(fetchUserAllCollections(id)))()
@@ -117,15 +141,15 @@ export const SelfCollection: React.FC = () => {
           classes={{ root: 'field-add-new-collection' }}
         >
           <Grid item xs={4}>
-            <Typography classes={{root:'title-create-collection-dashboard'}} variant='h5'>{t("titleItem")}</Typography>
+            <Typography classes={{ root: 'title-create-collection-dashboard' }} variant='h5'>{t("titleItem")}</Typography>
             <TextField size="small" {...register('title', { value: title })} onChange={(e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setTitle(e.currentTarget.value)} fullWidth />
           </Grid>
           <Grid item xs={4}>
-            <Typography classes={{root:'title-create-collection-dashboard'}} variant='h5'>{t("description")}</Typography>
+            <Typography classes={{ root: 'title-create-collection-dashboard' }} variant='h5'>{t("description")}</Typography>
             <TextField size="small"  {...register('description', { value: description })} onChange={(e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setDescription(e.currentTarget.value)} fullWidth />
           </Grid>
           <Grid item xs={4}>
-            <Typography classes={{root:'title-create-collection-dashboard'}} variant='h5'>{t("theme")}</Typography>
+            <Typography classes={{ root: 'title-create-collection-dashboard' }} variant='h5'>{t("theme")}</Typography>
             <TextField size="small" id="outlined-select-currency" SelectProps={{
               native: true,
             }}
@@ -138,25 +162,24 @@ export const SelfCollection: React.FC = () => {
             </TextField>
           </Grid>
         </Grid>
-        <Grid sx={{marginTop:'10px'}}container>
-            <Grid item xs={12}>
-              <Button type="submit" size="small" variant="contained" fullWidth>{t("edit")}</Button>
-            </Grid>
+        <Grid sx={{ marginTop: '10px' }} container>
+          <Grid item xs={12}>
+            <Button type="submit" size="small" variant="contained" fullWidth>{t("edit")}</Button>
           </Grid>
+        </Grid>
       </form>) : (<form onSubmit={handleSubmit(handleSendCollection)} className='form-create-new-collection' >
         <Grid container spacing={0.5} direction="row"
-          justifyContent="space-between"
           alignItems="center" sx={{ border: 'solid 1px', borderRadius: '5px', padding: '10px' }}>
           <Grid item xs={4}>
-            <Typography classes={{root:'title-create-collection-dashboard'}} variant='h5'>{t("titleItem")}</Typography>
+            <Typography classes={{ root: 'title-create-collection-dashboard' }} variant='h5'>{t("titleItem")}</Typography>
             <TextField size="small" {...register('title', { value: title })} onChange={(e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setTitle(e.currentTarget.value)} fullWidth />
           </Grid>
           <Grid item xs={4}>
-            <Typography classes={{root:'title-create-collection-dashboard'}} variant='h5'>{t("description")}</Typography>
+            <Typography classes={{ root: 'title-create-collection-dashboard' }} variant='h5'>{t("description")}</Typography>
             <TextField size="small"  {...register('description', { value: description })} onChange={(e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setDescription(e.currentTarget.value)} fullWidth />
           </Grid>
           <Grid item xs={4}>
-            <Typography classes={{root:'title-create-collection-dashboard'}} variant='h5'>{t("theme")}</Typography>
+            <Typography classes={{ root: 'title-create-collection-dashboard' }} variant='h5'>{t("theme")}</Typography>
             <TextField size="small" id="outlined-select-currency" SelectProps={{
               native: true,
             }}
@@ -168,7 +191,13 @@ export const SelfCollection: React.FC = () => {
               <Themes />
             </TextField>
           </Grid>
-          <Grid sx={{marginTop:'10px'}}container>
+          <Button sx={{ margin: '10px 0 10px 5px' }} size='small' variant="outlined" onClick={() => handlerAddCustomField()}>{t("addField")}</Button>
+          <Grid container>
+            <Grid item xs={12} sx={{ display: 'flex', flexWrap: 'wrap' }}>
+              {customFields.map((obj, index) => <Box key={index} sx={{ margin: '0 0 10px 10px' }}><TextField name='customFieldName' value={obj.customFieldName} onChange={(e) => handleOnChangeField(e, index)} size='small' /><IconButton size='small' onClick={() => handlerDeleteCustomField(index)}><HighlightOffIcon /></IconButton></Box>)}
+            </Grid>
+          </Grid>
+          <Grid sx={{ marginTop: '10px' }} container>
             <Grid item xs={12}>
               <Button type="submit" size="small" variant="contained" fullWidth>{t("create")}</Button>
             </Grid>
