@@ -25,6 +25,8 @@ import { IItem } from '../../redux/slices/item';
 import { CommentsBlock } from '../../components/CommentsBlock/CommentsBlock';
 import { AddComments } from '../../components/AddComment/AddComment';
 
+import { IInitialState } from '../../redux/slices/item';
+
 
 interface ISocketItem {
   socket: Socket,
@@ -37,7 +39,15 @@ export const Item: React.FC<ISocketItem> = ({ socket }) => {
   const { id } = useParams();
   const dispatch: ThunkDispatch<Object[] | Object, void, AnyAction> = useDispatch();
   const userData: IUser = useSelector((state: RootState) => state.auth.userData.data);
-  const { itemCollection, likesItemCollection } = useSelector((state: RootState) => state.item);
+  const { itemCollection, likesItemCollection }: {
+    itemCollection: {
+      item: IItem,
+      status: string
+    }, likesItemCollection: {
+      likes: string[],
+      status: string
+    }
+  } = useSelector((state: RootState) => state.item);
   const isLoadingItemData = Boolean(itemCollection.item);
   const isLoadingLikes = Boolean(likesItemCollection.likes);
   const isAuth = Boolean(userData);
@@ -48,8 +58,6 @@ export const Item: React.FC<ISocketItem> = ({ socket }) => {
     message: string,
     created: string
   }[]>([])
-
-
 
   const onClickLike = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -83,13 +91,14 @@ export const Item: React.FC<ISocketItem> = ({ socket }) => {
   return (
     <>
       <Paper sx={{ padding: '20px', marginBottom: '10px' }}>
-        {isLoadingItemData && <Grid container sx={{ marginBottom: '10px' }}>
-          <Grid item xs={6}>
+        {isLoadingItemData && <Grid container spacing={2} sx={{ marginBottom: '10px' }}>
+          <Grid item xs={12}>
             <Typography variant='h5'>{itemCollection.item.title}</Typography>
           </Grid>
-          <Grid item xs={6}>
-            <Typography variant='h5'><List>{itemCollection.item.tags && itemCollection.item.tags.map((val: string[]) => <ListItem key={uuidv4()}>{val}</ListItem>)}</List></Typography>
+          <Grid item xs={12}>
+            <List>{itemCollection.item.tags && itemCollection.item.tags.map((val: string) => <ListItem key={uuidv4()}>{val}</ListItem>)}</List>
           </Grid>
+          {itemCollection.item.customFields && itemCollection.item.customFields.map((obj) => <Grid key={uuidv4()} item xs={12}>{obj.customFieldName}</Grid>)}
         </Grid>}
         {isAuth && (<Grid container><Grid item xs={0.5} sx={{ display: 'flex', alignItems: 'center' }}><Typography>{isLoadingLikes && likesItemCollection.likes.length}</Typography></Grid><Grid item xs={0.5}><IconButton onClick={(e) => onClickLike(e)} aria-label="like">
           {liked ? (<FavoriteIcon />) : (<FavoriteBorderIcon />)}
@@ -107,5 +116,4 @@ export const Item: React.FC<ISocketItem> = ({ socket }) => {
       </CommentsBlock>
     </>
   )
-
 }
