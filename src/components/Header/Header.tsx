@@ -61,17 +61,10 @@ export const Header: React.FC<IHeader> = ({ list, setList, listByComments, setLi
   const userData = useSelector((state: RootState) => state.auth.userData);
   const isLoading = userData.status === 'loading';
   const isAuth = Boolean(userData.data)&&userData.data.status!=='blocked';
-  console.log(isAuth);
   const isAdmin = isAuth && userData.data.position === 'admin';
 
   const [open, setOpen] = React.useState(false);
   const [searchResult, setSearchResult] = useState('');
-
-  console.log(listByCollection);
-
-  console.log(listByComments);
-  console.log(list);
-  console.log(searchResult);
   const [language, setLanguage] = useState<string>(JSON.parse(localStorage.getItem('language')!) || 'en');
 
   const handleChangeLanguage = (event: SelectChangeEvent) => {
@@ -212,7 +205,7 @@ export const Header: React.FC<IHeader> = ({ list, setList, listByComments, setLi
             </>) : (<>
               {isLoading ? '' : <Avatar  {...stringAvatar(userData.data.fullName)} className='avatar-user' />}
               <Link to={`/collection/${userData.data._id}`}>
-                <Button classes={{ root: 'btn-header' }} variant="outlined">{t("createCollection")}</Button>
+                <Button classes={{ root: 'btn-header' }} variant="outlined">{t("myCollections")}</Button>
               </Link>
               <Button classes={{ root: 'btn-header' }} onClick={onClickLogout} variant="contained" color="error">
                 {t("logout")}
