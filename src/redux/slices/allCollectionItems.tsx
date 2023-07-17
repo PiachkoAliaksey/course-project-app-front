@@ -1,8 +1,21 @@
 import { createSlice, createAsyncThunk, AsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
 import { IItem } from './item';
 import { instance } from '../../constant/apiConfig';
 
+interface IInitialState {
+  items: {
+    allCollectionItems: IItem[] | [],
+    status: string
+  },
+  allTags: {
+    tags: string[],
+    status: string,
+  },
+  customFields: {
+    fields: { customFieldName: string }[],
+    status: string
+  }
+}
 
 
 export const fetchUserAllCollectionItem = createAsyncThunk('collection/fetchUserAllCollectionItem', async (id: string) => {
@@ -20,7 +33,7 @@ export const fetchCloudTags = createAsyncThunk('collection/fetchCloudTags', asyn
   return data;
 })
 
-export const fetchDeleteCollectionItem = createAsyncThunk('collection/fetchDeleteCollectionItem', async (index:string) => {
+export const fetchDeleteCollectionItem = createAsyncThunk('collection/fetchDeleteCollectionItem', async (index: string) => {
   return await instance.delete(`/collection/items/delete/${index}`);
 
 })
@@ -50,30 +63,25 @@ export const fetchSearchItemsByCollection = createAsyncThunk('collection/fetchSe
   return data;
 })
 
+export const fetchCustomFields = createAsyncThunk('collection/fetchCustomFields', async (id: string) => {
+  const { data } = await instance.get(`/collection/itemsCustomFields/${id}`);
+  return data;
+})
 
 
-interface IInitialState {
-  items: {
-    allCollectionItems: IItem[] | [],
-    status: string
-  },
-  allTags: {
-    tags: string[],
-    status: string,
-  }
-}
 const initialState = {
   items: {
     allCollectionItems: [],
     status: 'loading'
-
   },
   allTags: {
     tags: [],
     status: 'loading',
+  },
+  customFields: {
+    fields: [],
+    status: 'loading'
   }
-
-
 } as IInitialState;
 
 const allCollectionItemsSlice = createSlice({
@@ -146,7 +154,7 @@ const allCollectionItemsSlice = createSlice({
       state.allTags.status = 'loading';
     })
     builder.addCase(fetchCloudTags.fulfilled, (state, action) => {
-      state.allTags.tags = action.payload
+      state.allTags.tags = action.payload;
       state.allTags.status = 'loaded';
     })
     builder.addCase(fetchCloudTags.rejected, (state) => {
@@ -158,25 +166,26 @@ const allCollectionItemsSlice = createSlice({
       state.items.status = 'loading';
     })
     builder.addCase(getAllMatchItems.fulfilled, (state, action) => {
-      state.items.allCollectionItems = action.payload
+      state.items.allCollectionItems = action.payload;
       state.items.status = 'loaded';
     })
     builder.addCase(getAllMatchItems.rejected, (state) => {
       state.items.allCollectionItems = [];
       state.items.status = 'error';
     })
-    // builder.addCase(fetchSearchItems.pending, (state) => {
-    //   state.items.allCollectionItems = [];
-    //   state.items.status = 'loading';
-    // })
-    // builder.addCase(fetchSearchItems.fulfilled, (state, action) => {
-    //   state.items.allCollectionItems = action.payload
-    //   state.items.status = 'loaded';
-    // })
-    // builder.addCase(fetchSearchItems.rejected, (state) => {
-    //   state.items.allCollectionItems = [];
-    //   state.items.status = 'error';
-    // })
+    builder.addCase(fetchCustomFields.pending, (state) => {
+      state.customFields.fields = [];
+      state.customFields.status = 'loading';
+    })
+    builder.addCase(fetchCustomFields.fulfilled, (state, action) => {
+      state.customFields.fields = action.payload;
+      state.customFields.status = 'loaded';
+    })
+    builder.addCase(fetchCustomFields.rejected, (state) => {
+      state.customFields.fields = [];
+      state.customFields.status = 'error';
+    })
+
   }
 })
 
