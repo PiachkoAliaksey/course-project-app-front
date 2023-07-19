@@ -6,30 +6,28 @@ import "../Table/Table.scss";
 
 
 
-export const TableRowsLoader:React.FC<{rowsNum:number}> = ({ rowsNum }) => {
+export const TableRowsLoader: React.FC<{ rowsNum: number }> = ({ rowsNum }) => {
   return (
     <>
-    {[...Array(rowsNum)].map((_, index) => (
-      <TableRow key={index}>
-        <TableCell component="th" scope="row">
-          <Skeleton animation="wave" variant="rectangular" width={20} height={20} />
-        </TableCell>
-        <TableCell>
-          <Skeleton animation="wave" width='100px' variant="text" />
-        </TableCell>
-        <TableCell>
-          <Skeleton animation="wave" width='100px' variant="text" />
-        </TableCell>
-        <TableCell>
-          <Skeleton animation="wave" width='100px' variant="text" />
-        </TableCell>
-        <TableCell>
-          <Skeleton animation="wave" width='100px' variant="text" />
-        </TableCell>
-      </TableRow>
-    ))}
+      {[...Array(rowsNum)].map((_, index) => (
+        <TableRow key={index}>
+          <TableCell component="th" scope="row">
+            <Skeleton animation="wave" variant="rectangular" width={20} height={20} />
+          </TableCell>
+          <TableCell>
+            <Skeleton animation="wave" width='100px' variant="text" />
+          </TableCell>
+          <TableCell>
+            <Skeleton animation="wave" width='100px' variant="text" />
+          </TableCell>
+          <TableCell>
+            <Skeleton animation="wave" width='100px' variant="text" />
+          </TableCell>
+          <TableCell>
+            <Skeleton animation="wave" width='100px' variant="text" />
+          </TableCell>
+        </TableRow>
+      ))}
     </>
-
-
   );
 };
