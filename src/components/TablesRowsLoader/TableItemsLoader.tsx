@@ -6,25 +6,25 @@ import "../Table/Table.scss";
 
 
 
-export const TableItemLoader:React.FC<{rowsNum:number}> = ({ rowsNum }) => {
+export const TableItemLoader: React.FC<{ rowsNum: number }> = ({ rowsNum }) => {
   return (
     <>
-    {[...Array(rowsNum)].map((_, index) => (
-      <TableRow key={index}>
-        <TableCell>
-          <Skeleton animation="wave" variant="text" />
-        </TableCell>
-        <TableCell>
-          <Skeleton animation="wave" variant="text" />
-        </TableCell>
-        <TableCell>
-          <Skeleton animation="wave" variant="text" />
-        </TableCell>
-        <TableCell>
-          <Skeleton animation="wave" variant="text" />
-        </TableCell>
-      </TableRow>
-    ))}
+      {[...Array(rowsNum)].map((_, index) => (
+        <TableRow key={index}>
+          <TableCell>
+            <Skeleton animation="wave" variant="text" />
+          </TableCell>
+          <TableCell>
+            <Skeleton animation="wave" variant="text" />
+          </TableCell>
+          <TableCell>
+            <Skeleton animation="wave" variant="text" />
+          </TableCell>
+          <TableCell>
+            <Skeleton animation="wave" variant="text" />
+          </TableCell>
+        </TableRow>
+      ))}
     </>
 
 
