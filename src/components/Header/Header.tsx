@@ -7,8 +7,6 @@ import { ThunkDispatch } from "redux-thunk";
 import { AnyAction } from "redux";
 import { useTranslation } from "react-i18next";
 
-import './Header.scss';
-
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -26,32 +24,33 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import ClearIcon from '@mui/icons-material/Clear';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
-
 
 import { logout } from '../../redux/slices/auth';
 import { stringAvatar } from '../../utils/createNameAvatar';
 import { ColorModeContext } from '../../App';
 import { LANGUAGES } from '../../constant/index';
-import { fetchSearchItems, fetchSearchItemsByComments,fetchSearchItemsByCollection } from '../../redux/slices/allCollectionItems';
+import { fetchSearchItems, fetchSearchItemsByComments, fetchSearchItemsByCollection } from '../../redux/slices/allCollectionItems';
 import { IItem } from '../../redux/slices/item';
 
+import './Header.scss';
 interface IHeader {
   list: { _id: string, title: string }[],
   setList: React.Dispatch<React.SetStateAction<{ _id: string, title: string }[]>>,
   listByComments: { _id: string, title: string }[],
   setListByComments: React.Dispatch<React.SetStateAction<{ _id: string, title: string }[]>>,
-  listByCollection:{ _id: string, title: string }[],
-  setListByCollection:React.Dispatch<React.SetStateAction<{
+  listByCollection: { _id: string, title: string }[],
+  setListByCollection: React.Dispatch<React.SetStateAction<{
     _id: string;
     title: string;
-}[]>>
+  }[]>>
 
 }
 
 
-export const Header: React.FC<IHeader> = ({ list, setList, listByComments, setListByComments,listByCollection,setListByCollection }) => {
+export const Header: React.FC<IHeader> = ({ list, setList, listByComments, setListByComments, listByCollection, setListByCollection }) => {
   const navigate = useNavigate();
   const theme = useTheme();
   const colorMode = React.useContext(ColorModeContext);
@@ -60,7 +59,7 @@ export const Header: React.FC<IHeader> = ({ list, setList, listByComments, setLi
   const dispatch: ThunkDispatch<IItem[], void, AnyAction> = useDispatch();
   const userData = useSelector((state: RootState) => state.auth.userData);
   const isLoading = userData.status === 'loading';
-  const isAuth = Boolean(userData.data)&&userData.data.status!=='blocked';
+  const isAuth = Boolean(userData.data) && userData.data.status !== 'blocked';
   const isAdmin = isAuth && userData.data.position === 'admin';
 
   const [open, setOpen] = React.useState(false);
@@ -75,17 +74,21 @@ export const Header: React.FC<IHeader> = ({ list, setList, listByComments, setLi
 
   const handleSearchBar = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchResult(e.currentTarget.value);
-    const data = await dispatch(fetchSearchItems(searchResult));
-    const dataItemByComments = await dispatch(fetchSearchItemsByComments(searchResult));
-    const dataItemByCollection = await dispatch(fetchSearchItemsByCollection(searchResult));
-    setListByCollection(dataItemByCollection.payload);
-    setListByComments(dataItemByComments.payload);
-    setList(data.payload);
-    navigate('/search/items')
+    if (searchResult.length > 0) {
+      const data = await dispatch(fetchSearchItems(searchResult));
+      const dataItemByComments = await dispatch(fetchSearchItemsByComments(searchResult));
+      const dataItemByCollection = await dispatch(fetchSearchItemsByCollection(searchResult));
+      setListByCollection(dataItemByCollection.payload);
+      setListByComments(dataItemByComments.payload);
+      setList(data.payload);
+      navigate('/search/items')
+    }
   };
+
   const handleDisagreeClose = () => {
     setOpen(false);
   };
+
   const handleAgreeClose = () => {
     setOpen(false);
     dispatch(logout());
@@ -99,13 +102,14 @@ export const Header: React.FC<IHeader> = ({ list, setList, listByComments, setLi
   useEffect(() => {
     localStorage.setItem('language', JSON.stringify(language));
   }, [language]);
+
   useEffect(() => {
     i18n.changeLanguage(language);
   }, []);
 
   return (
     <>
-    <Dialog
+      <Dialog
         open={open}
         onClose={handleDisagreeClose}
         aria-labelledby="alert-dialog-title"
@@ -117,7 +121,7 @@ export const Header: React.FC<IHeader> = ({ list, setList, listByComments, setLi
         <DialogActions>
           <Button onClick={handleDisagreeClose}>{t("disagree")}</Button>
           <Button onClick={handleAgreeClose} autoFocus>
-          {t("agree")}
+            {t("agree")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -127,8 +131,8 @@ export const Header: React.FC<IHeader> = ({ list, setList, listByComments, setLi
             <Typography variant='h4'>{t("title")}</Typography>
           </Link>
           <Autocomplete
+            disableClearable={true}
             sx={{ width: '40%' }}
-            disableClearable
             noOptionsText={`${t("noResultsFound")}`}
             id="combo-box-demo"
             options={[...list, ...listByComments]}
@@ -136,7 +140,7 @@ export const Header: React.FC<IHeader> = ({ list, setList, listByComments, setLi
             renderInput={(params) => {
               return (<TextField {...params}
                 id="search"
-                type="search"
+                type="text"
                 label={t("search")}
                 value={searchResult}
                 onChange={handleSearchBar}
@@ -145,9 +149,8 @@ export const Header: React.FC<IHeader> = ({ list, setList, listByComments, setLi
                   ...params.InputProps,
                   type: 'search',
                 }}
-
-              />)
-
+              />
+              )
             }
             }
             renderOption={(props, option: { _id: string, title: string }, { inputValue }) => {
@@ -171,7 +174,6 @@ export const Header: React.FC<IHeader> = ({ list, setList, listByComments, setLi
                     </div>
                   </ListItem>
                 </Link>
-
               );
             }}
           />
@@ -212,7 +214,6 @@ export const Header: React.FC<IHeader> = ({ list, setList, listByComments, setLi
               </Button>
 
             </>)
-
             ) : (
               <>
                 <Link to="/login">
