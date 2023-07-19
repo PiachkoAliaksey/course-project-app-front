@@ -79,9 +79,6 @@ export const CollectionOfItems: React.FC = () => {
 
   //basic state for sorting items
   const [itemsData, setItemsData] = useState<IItem[]>([]);
-  const [currentIndexTableHeader, setCurrentIndexTableHeader] = useState<number | null>(null);
-  const [sortField, setSortField] = useState("");
-  const [order, setOrder] = useState("asc");
 
   const titlesHead = [
     { label: "titleItem", field: "title" },
@@ -94,12 +91,17 @@ export const CollectionOfItems: React.FC = () => {
 
 
   //function for sorting items
-  const handleSorting = (sortField: string, sortOrder: string) => {
+  const handleSorting = (sortField: string, sortOrder: string, index: number, fieldName?: string) => {
     if (sortField && isLoadedItemsData) {
       const sorted: IItem[] = [...items.allCollectionItems].sort((a, b) => {
         if (a[sortField] === null) return 1;
         if (b[sortField] === null) return -1;
         if (a[sortField] === null && b[sortField] === null) return 0;
+        if (sortField === 'customFields') {
+          return a[sortField][index][fieldName!].toString().localeCompare(b[sortField][index][fieldName!].toString(), "en", {
+            numeric: true,
+          }) * (sortOrder === "asc" ? 1 : -1)
+        }
         return (
           a[sortField].toString().localeCompare(b[sortField].toString(), "en", {
             numeric: true,
@@ -137,6 +139,11 @@ export const CollectionOfItems: React.FC = () => {
             if (found) {
               list.push(found);
             }
+          } else if (Array.isArray(value) && value.some((obj) => typeof obj === 'object' ? obj.customFieldName.toLowerCase() === searchField.toLowerCase() : '')) {
+            const found = items.allCollectionItems.find((obj: IItem) => obj._id === current._id);
+            if (found) {
+              list.push(found);
+            }
           }
 
         })
@@ -160,11 +167,8 @@ export const CollectionOfItems: React.FC = () => {
   const idPopoverMui = isOpenPopoverMui ? 'simple-popover' : undefined;
 
   //function set basic state for sorting
-  const handleSortingItems = (order: string, field: string, index: number) => {
-    setCurrentIndexTableHeader(index);
-    setSortField(field);
-    setOrder(order);
-    handleSorting(field, order);
+  const handleSortingItems = (order: string, field: string, index: number, fieldName?: string) => {
+    handleSorting(field, order, index, fieldName);
   };
 
   //function show filter  field
@@ -187,7 +191,6 @@ export const CollectionOfItems: React.FC = () => {
     await dispatch(fetchDeleteCollectionItem(index));
     collectionId && await dispatch(fetchEditCountItemCollection(collectionId));
     collectionId && await dispatch(fetchUserAllCollectionItem(collectionId));
-
   }
 
   const handlerEditItem = async (data: { title: string, tags: string, list?: { customFieldName: string }[] }) => {
@@ -233,14 +236,32 @@ export const CollectionOfItems: React.FC = () => {
 
               {titlesHead.map(({ label, field }, index) => <TableCell key={uuidv4()}>
                 <Typography>{t(`${label}`)}</Typography>
-                <IconButton size="small" onClick={() => handleSortingItems('asc', field, index)} sx={{ background: (currentIndexTableHeader === index && order === 'asc' ? 'blue' : 'none') }}><ArrowUpwardIcon fontSize="small" /></IconButton>
-                <IconButton size="small" onClick={() => handleSortingItems('desc', field, index)} sx={{ background: (currentIndexTableHeader === index && order === 'desc' ? 'blue' : 'none') }}><ArrowDownwardIcon fontSize="small" /></IconButton>
+                <IconButton size="small"
+                  onClick={() => handleSortingItems('asc', field, index)}
+                >
+                  <ArrowUpwardIcon fontSize="small" />
+                </IconButton>
+                <IconButton size="small" onClick={() => handleSortingItems('desc', field, index)}
+                >
+                  <ArrowDownwardIcon fontSize="small" />
+                </IconButton>
+              </TableCell>)}
+              {isCustomFieldsLoaded && customFields.fields.map((obj: { customFieldName: string }, index: number) => <TableCell key={uuidv4()} >
+                <Typography>{obj.customFieldName}</Typography>
+                <IconButton size="small"
+                  onClick={() => handleSortingItems('asc', 'customFields', index, 'customFieldName')}
+                >
+                  <ArrowUpwardIcon fontSize="small" />
+                </IconButton>
+                <IconButton size="small" onClick={() => handleSortingItems('desc', 'customFields', index, 'customFieldName')}
+                >
+                  <ArrowDownwardIcon fontSize="small" />
+                </IconButton>
 
               </TableCell>)}
-              {isCustomFieldsLoaded && customFields.fields.map((obj: { customFieldName: string }) => <TableCell key={uuidv4()} ><Typography>{obj.customFieldName}</Typography></TableCell>)}
 
               <TableCell ><Typography></Typography></TableCell>
-              <TableCell > <Typography></Typography></TableCell>
+              <TableCell ><Typography></Typography></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
