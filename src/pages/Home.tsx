@@ -70,7 +70,7 @@ export const Home: React.FC = () => {
     <Grid container spacing={4}>
       <Grid xs={12} item>
         <List classes={{ root: 'list-of-tags' }}>
-          {isLoadedTags && allTags.tags.map((tag: string[]) => <Link key={uuidv4()} className='link-tag' to={`/search/${tag.slice(1)}`}><ListItemButton sx={{ color: 'text.primary' }} key={uuidv4()}>{tag}</ListItemButton></Link>)}
+          {isLoadedTags && allTags.tags.map((tag: string[]) => <Link key={uuidv4()} className='link-tag' to={`/search/${tag.slice(1)}`}><ListItemButton sx={{ color: 'text.primary',borderRadius:'5px' }} key={uuidv4()}>{tag}</ListItemButton></Link>)}
         </List>
       </Grid>
       <Grid classes={{ root: 'main-container-items-collections' }} xs={12} item>
@@ -86,7 +86,7 @@ export const Home: React.FC = () => {
             </ListItem>
             {isLoadedItemsData ? (items.allCollectionItems.map((obj: IItem) =>
               <Link key={obj._id} className='link-item-last-five' to={`/collection/items/item/${obj._id}`}>
-                <ListItemButton sx={{ color: 'text.primary' }} >
+                <ListItemButton sx={{ color: 'text.primary',borderRadius:'5px' }} >
                   <Grid container spacing={0.5}>
                     <Grid classes={{ root: 'last-added-item' }} item xs={4}>{obj.title}</Grid>
                     <Grid classes={{ root: 'last-added-item' }} item xs={4}>{obj.collectionName}</Grid>
