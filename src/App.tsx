@@ -20,7 +20,7 @@ import { SearchPageItems } from './pages/SearchPageItems/SearchPageItems';
 import { fetchAuthMe } from './redux/slices/auth';
 import { IItem } from './redux/slices/item';
 import { io } from 'socket.io-client';
-const socket = io('https://self-collection-server.onrender.com');
+const socket = io('http://localhost:4444');
 
 import './sass/style.scss';
 
