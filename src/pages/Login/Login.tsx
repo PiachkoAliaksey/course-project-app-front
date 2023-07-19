@@ -15,6 +15,10 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import "./Login.scss";
 
@@ -32,6 +36,13 @@ export const Login: React.FC = () => {
   const [open, setOpen] = React.useState(false);
   const [notCorrectData, setNotCorrectData] = useState(false);
   const [statusBlocked, setStatusBlocked] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -88,14 +99,27 @@ export const Login: React.FC = () => {
             label={t("eMail")}
             type='email'
             error={Boolean(errors.email?.message)}
-            helperText={errors.email?.message}
             {...register('email', { required: 'Email' })}
             fullWidth
           />
           <TextField className="field" label={t("password")}
+            type={showPassword ? 'text' : 'password'}
             error={Boolean(errors.password?.message)}
             {...register('password', { required: 'Password' })}
-            helperText={errors.password?.message}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position='end'>
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
             fullWidth />
           <Button type="submit" size="large" variant="contained" fullWidth>
             {t("enter")}
