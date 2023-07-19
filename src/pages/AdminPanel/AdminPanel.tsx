@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { Navigate } from "react-router-dom";
+import { RootState } from 'redux/store';
 import { v4 as uuidv4 } from 'uuid';
 import { useDispatch, useSelector } from 'react-redux';
+import { AnyAction } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
+
 import { useTranslation } from "react-i18next";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -11,15 +16,13 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Box, Button, Checkbox } from "@mui/material";
-import { Navigate } from "react-router-dom";
-import { RootState } from 'redux/store';
+
 import { fetchUsersTable, fetchDeleteUser, fetchStatusStatusUser, fetchAccess } from '../../redux/slices/usersTable';
-import { AnyAction } from 'redux';
-import { ThunkDispatch } from 'redux-thunk';
 import { TableRowsLoader } from '../../components/TablesRowsLoader/TablesRowsLoader';
 import { UsersTable } from '../../components/Table/Table';
 import { logout } from '../../redux/slices/auth';
 
+import './AdminPanel.scss';
 
 export interface IUser {
   _id: string,
@@ -48,6 +51,7 @@ export const AdminPanel: React.FC = () => {
   const [isCheckAll, setIsCheckAll] = useState(false);
   const [isCheck, setIsCheck] = useState<string[]>([]);
 
+
   const handlerCheckAllCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsCheckAll(!isCheckAll);
     setIsCheck(items.map(li => li._id));
@@ -58,13 +62,12 @@ export const AdminPanel: React.FC = () => {
 
   const handlerDeleteUser = (arrId: string[]) => {
     if (arrId.length) {
-      arrId.forEach(async(user) => {
+      arrId.forEach(async (user) => {
         await dispatch(fetchDeleteUser(user));
         if (userData._id === user) {
           dispatch(logout());
           window.localStorage.removeItem('token');
         }
-
       })
     }
   }
@@ -77,14 +80,13 @@ export const AdminPanel: React.FC = () => {
           dispatch(logout());
           window.localStorage.removeItem('token');
         }
-
       })
     }
   }
 
   const handlerActiveUser = (arrId: string[], status = 'active') => {
     if (arrId.length) {
-      arrId.forEach(async(user) => {
+      arrId.forEach(async (user) => {
         await dispatch(fetchStatusStatusUser({ user, status }));
       })
     }
@@ -92,23 +94,25 @@ export const AdminPanel: React.FC = () => {
 
   const handlerAdminAccess = (arrId: string[], position = 'admin') => {
     if (arrId.length) {
-      arrId.forEach(async(user) => {
+      arrId.forEach(async (user) => {
         await dispatch(fetchAccess({ user, position }));
       })
     }
   }
+
   const handlerUserAccess = (arrId: string[], position = 'user') => {
     if (arrId.length) {
-      arrId.forEach(async(user) => {
+      arrId.forEach(async (user) => {
         await dispatch(fetchAccess({ user, position }));
       })
-      setTimeout(()=>window.location.reload(),1000)
+      setTimeout(() => window.location.reload(), 1000)
     }
   }
 
   useEffect(() => {
-      dispatch(fetchUsersTable())
+    dispatch(fetchUsersTable())
   }, [])
+
   useEffect(() => {
     if (isTableUsersLoading) {
       dispatch(fetchUsersTable())
@@ -123,8 +127,9 @@ export const AdminPanel: React.FC = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex',flexWrap:'wrap' }}>
         <Button
+          classes={{ root: 'btn-admin-panel' }}
           onClick={() => handlerDeleteUser(isCheck)}
           variant="outlined"
           sx={{ marginBottom: "10px", marginRight: "10px" }}
@@ -132,6 +137,7 @@ export const AdminPanel: React.FC = () => {
           {t("btndelete")}
         </Button>
         <Button
+          classes={{ root: 'btn-admin-panel' }}
           onClick={() => handlerBlockUser(isCheck)}
           variant="outlined"
           sx={{ marginBottom: "10px", marginRight: "10px" }}
@@ -139,6 +145,7 @@ export const AdminPanel: React.FC = () => {
           {t("btnblock")}
         </Button>
         <Button
+          classes={{ root: 'btn-admin-panel' }}
           onClick={() => handlerActiveUser(isCheck)}
           variant="outlined"
           sx={{ marginBottom: "10px", marginRight: "10px" }}
@@ -146,6 +153,7 @@ export const AdminPanel: React.FC = () => {
           {t("btnunblock")}
         </Button>
         <Button
+          classes={{ root: 'btn-admin-panel' }}
           onClick={() => handlerAdminAccess(isCheck)}
           variant="outlined"
           sx={{ marginBottom: "10px", marginRight: "10px" }}
@@ -153,6 +161,7 @@ export const AdminPanel: React.FC = () => {
           {t("adminaccess")}
         </Button>
         <Button
+          classes={{ root: 'btn-admin-panel' }}
           onClick={() => handlerUserAccess(isCheck)}
           variant="outlined"
           sx={{ marginBottom: "10px" }}
