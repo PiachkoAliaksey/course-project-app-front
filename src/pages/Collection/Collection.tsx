@@ -113,11 +113,9 @@ export const SelfCollection: React.FC = () => {
     setIsEdit(true)
   }
 
-
   const handlerSubmitEditCollection = () => {
     setIsEdit(false);
   }
-
 
   useEffect(() => {
     id && (async () => await dispatch(fetchUserAllCollections(id)))()
