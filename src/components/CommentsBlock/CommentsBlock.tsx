@@ -23,7 +23,6 @@ import { IUser } from "../../pages/AdminPanel/AdminPanel";
 import { date } from "../../constant/date";
 
 
-
 interface ICommentsBlock {
   children: ReactNode,
   itemIndex: string | undefined,
