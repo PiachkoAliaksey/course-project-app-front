@@ -12,7 +12,7 @@ import "../Table/Table.scss";
 export const SkeletonListLoader: React.FC<{ rowsNum: number }> = ({ rowsNum }) => {
   return (
     <>
-      {[...new Array(rowsNum)].map((_, index) =>{
+      {[...new Array(rowsNum)].map((_, index) => {
         return (<ListItemButton >
           <Grid container>
             <Grid item xs={4}><Skeleton width='70px' animation="wave" variant="text" /></Grid>
@@ -21,7 +21,7 @@ export const SkeletonListLoader: React.FC<{ rowsNum: number }> = ({ rowsNum }) =
           </Grid>
         </ListItemButton>)
       })
-        }
+      }
     </>
 
 
