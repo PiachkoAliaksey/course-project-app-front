@@ -52,13 +52,15 @@ export const CollectionOfItems: React.FC = () => {
 
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState<string | never>('');
+  const [listCustomField, setListCustomField] = useState<{ customFieldName: string }[]>([]);
   const [currentItemId, setCurrentItemId] = useState('');
   const [isEdit, setIsEdit] = useState(false);
 
   const { register, control, handleSubmit, setError, formState: { errors, isValid } } = useForm({
     values: {
       title: title,
-      tags: tags
+      tags: tags,
+      list: listCustomField
     },
     defaultValues: {
       title: '',
@@ -195,10 +197,13 @@ export const CollectionOfItems: React.FC = () => {
 
   const handlerEditItem = async (data: { title: string, tags: string, list?: { customFieldName: string }[] }) => {
     if (title.length > 0 && tags.length > 0 && currentItemId && collectionId) {
-      await dispatch(fetchEditCollectionItem({ 'idItem': currentItemId, 'title': title, 'tags': tags.split(' '), 'collectionName': collectionId }));
+      await dispatch(fetchEditCollectionItem({ 'idItem': currentItemId, 'title': title, 'tags': tags.split(' '), 'collectionName': collectionId, 'customFields': data.list! }));
       await dispatch(fetchUserAllCollectionItem(collectionId));
       setTitle('');
       setTags('');
+      setListCustomField([...listCustomField.map(obj => {
+        return {'customFieldName': ''}
+      })])
       setIsEdit(false);
     }
   }
@@ -208,6 +213,7 @@ export const CollectionOfItems: React.FC = () => {
     setTitle(obj.title);
     setTags(obj.tags.join(' '));
     setCurrentItemId(obj._id);
+    setListCustomField(obj.customFields);
     setIsEdit(true);
   }
 
@@ -327,10 +333,15 @@ export const CollectionOfItems: React.FC = () => {
               <Typography classes={{ root: 'title-dashboard-add-item' }} variant='h5'>Tags</Typography>
               <TextField size="small" {...register('tags', { value: tags })} onChange={(e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setTags((e.currentTarget.value).trim())} fullWidth />
             </Grid>
-            <Grid container>
-              <Grid item xs={12}>
-                <Button type="submit" variant="contained" fullWidth>{t("edit")}</Button>
-              </Grid>
+          </Grid>
+          <Grid container sx={{ marginBottom: '10px' }}>
+            {isCustomFieldsLoaded && customFields.fields.length > 0 && customFields.fields.map((obj: { customFieldName: string }, index: number) => <Grid item xs={12} key={uuidv4()} sx={{ marginBottom: '5px' }}>
+              <Typography classes={{ root: 'title-dashboard-add-item' }} variant='h5'>{obj.customFieldName}</Typography>
+              <TextField size="small" {...register(`list.${index}.customFieldName`)} fullWidth /></Grid>)}
+          </Grid>
+          <Grid container>
+            <Grid item xs={12}>
+              <Button type="submit" variant="contained" fullWidth>{t("edit")}</Button>
             </Grid>
           </Grid>
 
@@ -358,8 +369,8 @@ export const CollectionOfItems: React.FC = () => {
             </Grid>
           </Grid>
           <Grid container sx={{ marginBottom: '10px' }}>
-            {isCustomFieldsLoaded && customFields.fields.length > 0 && customFields.fields.map((obj: { customFieldName: string }, index: number) => <Grid item xs={12} key={uuidv4()} sx={{ marginBottom: '5px' }}><Typography classes={{ root: 'title-dashboard-add-item' }} variant='h5'>{obj.customFieldName}</Typography>
-
+            {isCustomFieldsLoaded && customFields.fields.length > 0 && customFields.fields.map((obj: { customFieldName: string }, index: number) => <Grid item xs={12} key={uuidv4()} sx={{ marginBottom: '5px' }}>
+              <Typography classes={{ root: 'title-dashboard-add-item' }} variant='h5'>{obj.customFieldName}</Typography>
               <TextField size="small" {...register(`list.${index}.customFieldName`)} fullWidth /></Grid>)}
           </Grid>
           <Grid container spacing={2}>

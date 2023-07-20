@@ -17,8 +17,8 @@ export const fetchDeleteCollection = createAsyncThunk('collection/fetchDeleteCol
 
 })
 
-export const fetchEditCollection = createAsyncThunk('collection/fetchEditCollection', async ({ user, title, description, theme }: { user: string, title: string, description: string, theme: string }) => {
-  const { data } = await instance.patch(`/collections/update/${user}`, { 'title': title, "description": description, "theme": theme });
+export const fetchEditCollection = createAsyncThunk('collection/fetchEditCollection', async ({ user, title, description, theme,customFields }: { user: string, title: string, description: string, theme: string,customFields:{customFieldName:string}[] }) => {
+  const { data } = await instance.patch(`/collections/update/${user}`, { 'title': title, "description": description, "theme": theme,"customFields":customFields });
   return data;
 })
 

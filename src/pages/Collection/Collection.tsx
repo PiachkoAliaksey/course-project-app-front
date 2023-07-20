@@ -84,17 +84,19 @@ export const SelfCollection: React.FC = () => {
       setTitle('');
       setDescription('');
       setThemeCollection('');
+      setCustomFields([]);
     }
   }
 
   const handlerEditCollection = async (data: { title: string, description: string, themeCollection: string }) => {
     if (title.length > 0 && description.length > 0 && themeCollection.length > 0 && currentCollectionId) {
-      await dispatch(fetchEditCollection({ 'user': currentCollectionId, 'title': title, 'description': description, 'theme': themeCollection }));
+      await dispatch(fetchEditCollection({ 'user': currentCollectionId, 'title': title, 'description': description, 'theme': themeCollection,'customFields': customFields }));
       id && await dispatch(fetchUserAllCollections(id));
       setTitle('');
       setDescription('');
       setThemeCollection('');
       setIsEdit(false);
+      setCustomFields([]);
     }
   }
 
@@ -159,12 +161,19 @@ export const SelfCollection: React.FC = () => {
               <Themes />
             </TextField>
           </Grid>
-        </Grid>
-        <Grid sx={{ marginTop: '10px' }} container>
-          <Grid item xs={12}>
-            <Button type="submit" size="small" variant="contained" fullWidth>{t("edit")}</Button>
+          <Button sx={{ margin: '10px 0 10px 5px' }} size='small' variant="outlined" onClick={() => handlerAddCustomField()}>{t("addField")}</Button>
+          <Grid container>
+            <Grid item xs={12} sx={{ display: 'flex', flexWrap: 'wrap' }}>
+              {customFields.map((obj, index) => <Box key={index} sx={{ margin: '0 0 10px 10px' }}><TextField name='customFieldName' value={obj.customFieldName} onChange={(e) => handleOnChangeField(e, index)} size='small' /><IconButton size='small' onClick={() => handlerDeleteCustomField(index)}><HighlightOffIcon /></IconButton></Box>)}
+            </Grid>
+          </Grid>
+          <Grid sx={{ marginTop: '10px' }} container>
+            <Grid item xs={12}>
+              <Button type="submit" size="small" variant="contained" fullWidth>{t("edit")}</Button>
+            </Grid>
           </Grid>
         </Grid>
+
       </form>) : (<form onSubmit={handleSubmit(handleSendCollection)} className='form-create-new-collection' >
         <Grid container spacing={0.5} direction="row"
           alignItems="center" sx={{ border: 'solid 1px', borderRadius: '5px', padding: '10px' }}>

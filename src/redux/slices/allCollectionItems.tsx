@@ -38,8 +38,8 @@ export const fetchDeleteCollectionItem = createAsyncThunk('collection/fetchDelet
 
 })
 
-export const fetchEditCollectionItem = createAsyncThunk('collection/fetchEditCollectionItem', async ({ idItem, title, tags, collectionName }: { idItem: string, title: string, tags: string[], collectionName: string }) => {
-  const { data } = await instance.patch(`/collection/items/update/${idItem}`, { 'title': title, 'tags': tags, 'collectionName': collectionName });
+export const fetchEditCollectionItem = createAsyncThunk('collection/fetchEditCollectionItem', async ({ idItem, title, tags, collectionName,customFields }: { idItem: string, title: string, tags: string[], collectionName: string,customFields:{customFieldName:string}[] }) => {
+  const { data } = await instance.patch(`/collection/items/update/${idItem}`, { 'title': title, 'tags': tags, 'collectionName': collectionName,'customFields':customFields });
   return data;
 })
 
