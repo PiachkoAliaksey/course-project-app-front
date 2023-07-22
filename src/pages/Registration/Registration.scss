@@ -20,3 +20,10 @@
   justify-content: center;
   margin-bottom: 30px;
 }
+
+@media screen and (max-width: 425px){
+  .registration-bar {
+    width: 300px;
+    padding: 20px;
+  }
+}
