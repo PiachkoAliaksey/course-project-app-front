@@ -4,10 +4,8 @@ import { useParams } from "react-router-dom";
 import { AnyAction } from "redux";
 import { RootState } from "redux/store";
 import { ThunkDispatch } from "redux-thunk";
-import { Navigate } from "react-router-dom";
+
 import { useDispatch, useSelector } from 'react-redux';
-import { useForm } from "react-hook-form";
-import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import Paper from "@mui/material/Paper";
@@ -24,15 +22,14 @@ import { IUser } from '../../pages/AdminPanel/AdminPanel';
 import { IItem } from '../../redux/slices/item';
 import { CommentsBlock } from '../../components/CommentsBlock/CommentsBlock';
 import { AddComments } from '../../components/AddComment/AddComment';
-
 import { IInitialState } from '../../redux/slices/item';
+
+import './Item.scss';
 
 
 interface ISocketItem {
   socket: Socket,
 }
-
-
 
 
 export const Item: React.FC<ISocketItem> = ({ socket }) => {
@@ -48,6 +45,7 @@ export const Item: React.FC<ISocketItem> = ({ socket }) => {
       status: string
     }
   } = useSelector((state: RootState) => state.item);
+
   const isLoadingItemData = Boolean(itemCollection.item);
   const isLoadingLikes = Boolean(likesItemCollection.likes);
   const isAuth = Boolean(userData);
@@ -90,7 +88,7 @@ export const Item: React.FC<ISocketItem> = ({ socket }) => {
 
   return (
     <>
-      <Paper sx={{ padding: '20px', marginBottom: '10px' }}>
+      <Paper classes={{root:'item-data-field'}}>
         {isLoadingItemData && <Grid container spacing={2} sx={{ marginBottom: '10px' }}>
           <Grid item xs={12}>
             <Typography variant='h5'>{itemCollection.item.title}</Typography>
@@ -100,10 +98,14 @@ export const Item: React.FC<ISocketItem> = ({ socket }) => {
           </Grid>
           {itemCollection.item.customFields && itemCollection.item.customFields.map((obj) => <Grid key={uuidv4()} item xs={12}>{obj.customFieldName}</Grid>)}
         </Grid>}
-        {isAuth && (<Grid container><Grid item xs={0.5} sx={{ display: 'flex', alignItems: 'center' }}><Typography>{isLoadingLikes && likesItemCollection.likes.length}</Typography></Grid><Grid item xs={0.5}><IconButton onClick={(e) => onClickLike(e)} aria-label="like">
-          {liked ? (<FavoriteIcon />) : (<FavoriteBorderIcon />)}
-        </IconButton></Grid> </Grid>
-        )}
+        {isAuth &&
+          (<List classes={{root:'list-like'}}>
+            <Typography>{isLoadingLikes? likesItemCollection.likes.length:''}</Typography>
+            <IconButton onClick={(e) => onClickLike(e)} aria-label="like">
+              {liked ? (<FavoriteIcon />) : (<FavoriteBorderIcon />)}
+            </IconButton>
+          </List>
+          )}
       </Paper>
 
       <CommentsBlock
