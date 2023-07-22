@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { AnyAction } from "redux";
 import { RootState } from "redux/store";
 import { ThunkDispatch } from "redux-thunk";
@@ -35,6 +36,7 @@ interface IAddComment {
 }
 
 export const AddComments: React.FC<IAddComment> = ({ itemIndex, socket, setCommentsUsers, commentsUsers }) => {
+  const { i18n, t } = useTranslation();
   const dispatch: ThunkDispatch<Object[] | Object, void, AnyAction> = useDispatch();
   const userData: IUser = useSelector((state: RootState) => state.auth.userData.data);
 
@@ -71,13 +73,13 @@ export const AddComments: React.FC<IAddComment> = ({ itemIndex, socket, setComme
             <TextField
               {...register('comment', { value: comment })}
               onChange={(e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => setComment(e.currentTarget.value)}
-              label="Write comment..."
+              label={t("writeComment")}
               variant="outlined"
               maxRows={10}
               multiline
               fullWidth
             />
-            <Button type="submit" variant="contained">Sent</Button>
+            <Button type="submit" variant="contained">{t("sent")}</Button>
           </form>
         </div>
       }
