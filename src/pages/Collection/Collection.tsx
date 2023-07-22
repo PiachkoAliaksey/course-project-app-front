@@ -218,7 +218,7 @@ export const SelfCollection: React.FC = () => {
               <Paper elevation={2} key={obj._id} sx={{ marginBottom: '10px' }}>
                 <Link className='link-collection-items-user' to={`/collection/items/${id}/${obj._id}`}>
                   <ListItemButton key={obj._id} sx={{ color: 'text.primary' }} >
-                    <Grid container>
+                    <Grid container spacing={1}>
                       <Grid classes={{ root: 'collection-user' }} xs={3} item>{obj.title}</Grid>
                       <Grid classes={{ root: 'collection-user' }} xs={3} item>{obj.description}</Grid>
                       <Grid classes={{ root: 'collection-user' }} xs={3} item>{obj.theme}</Grid>
