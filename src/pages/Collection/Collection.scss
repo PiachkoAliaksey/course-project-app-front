@@ -6,7 +6,7 @@
   color:revert;
 }
 .title-my-collection{
-  margin-bottom: 20px;
+  margin-bottom: 20px !important;
 }
 
 .field-add-new-collection{
@@ -22,12 +22,18 @@
 }
 
 
-@media screen and (max-width: 420px){
+@media screen and (max-width: 425px){
   .title-create-collection-dashboard{
     font-size: 1.1rem !important;
   }
   .collection-user{
     font-size: 0.8rem;
+  }
+}
+
+@media screen and (max-width: 350px){
+  .collection-user{
+    font-size: 0.75rem;
   }
 }
 
