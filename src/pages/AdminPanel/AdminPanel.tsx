@@ -105,7 +105,7 @@ export const AdminPanel: React.FC = () => {
       arrId.forEach(async (user) => {
         await dispatch(fetchAccess({ user, position }));
       })
-      setTimeout(() => window.location.reload(), 1000)
+      dispatch(fetchUsersTable())
     }
   }
 
